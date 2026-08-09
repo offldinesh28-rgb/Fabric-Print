@@ -118,7 +118,7 @@ export const MediaLibraryModal: React.FC<MediaLibraryModalProps> = ({
     setUploading(true);
     const newItems: typeof STOCK_MEDIA_LIBRARY = [];
 
-    Array.from(files).forEach((file) => {
+    Array.from(files).forEach((file: File) => {
       const reader = new FileReader();
       reader.onload = (event) => {
         const url = event.target?.result as string;

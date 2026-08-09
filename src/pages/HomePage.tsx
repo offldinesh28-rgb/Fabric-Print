@@ -70,7 +70,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="grid grid-cols-3 gap-4 pt-6 border-t border-slate-800 text-xs text-slate-400">
               <div>
                 <span className="text-white font-extrabold block text-sm">20x20 cm</span>
-                <span>Test Swatches From $2</span>
+                <span>Test Swatches From ₹ 150</span>
               </div>
               <div>
                 <span className="text-white font-extrabold block text-sm">300 DPI</span>
@@ -98,7 +98,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                       Featured Base
                     </span>
                     <h4 className="font-bold text-white text-sm mt-1">Cotton Mulmul 60s x 60s</h4>
-                    <p className="text-[11px] text-slate-300">75 GSM • 44" Width • $4.80 / meter</p>
+                    <p className="text-[11px] text-slate-300">75 GSM • 44" Width • ₹ 480 / meter</p>
                   </div>
                 </div>
               </div>

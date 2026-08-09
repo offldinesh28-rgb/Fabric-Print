@@ -19,6 +19,9 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { FabricCustomizerModule } from './components/FabricCustomizerModule';
 import { AboutUsPage } from './pages/AboutUsPage';
 import { ContactUsPage } from './pages/ContactUsPage';
+import { AuthPage } from './pages/AuthPage';
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
+import { TermsConditionsPage } from './pages/TermsConditionsPage';
 
 import { fetchCategories, fetchProducts } from './services/api';
 import { Category, Product, Order } from './types';
@@ -196,12 +199,25 @@ export function MainAppContent() {
             )}
 
             {activeTab === 'contact' && <ContactUsPage />}
+
+            {activeTab === 'login' && (
+              <AuthPage
+                onNavigate={(tab) => {
+                  setActiveTab(tab);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
+            )}
+
+            {activeTab === 'privacy' && <PrivacyPolicyPage />}
+
+            {activeTab === 'terms' && <TermsConditionsPage />}
           </>
         )}
       </main>
 
       {/* Global Modals & Drawers */}
-      <CartDrawer onGoToCheckout={handleGoToCheckout} />
+      <CartDrawer onGoToCheckout={handleGoToCheckout} onGoToFabrics={handleGoToFabrics} />
       <BulkInquiryModal isOpen={bulkInquiryOpen} onClose={() => setBulkInquiryOpen(false)} />
       <WhatsAppButton />
 

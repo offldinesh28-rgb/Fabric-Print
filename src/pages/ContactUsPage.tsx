@@ -27,7 +27,7 @@ export const ContactUsPage: React.FC = () => {
           <span className="text-xs font-bold text-blue-900 uppercase tracking-wider block">
             Customer Support & Mill Inquiries
           </span>
-          <h1 className="text-3xl font-black font-serif text-slate-900">Get in Touch with TexPrint</h1>
+          <h1 className="text-3xl font-black font-serif text-slate-900">Get in Touch with Fabric Print</h1>
           <p className="text-xs text-slate-500">
             Have questions about fabric GSM, print design file validation, or custom Pantone shade lab dips?
           </p>
@@ -37,7 +37,7 @@ export const ContactUsPage: React.FC = () => {
           {/* Contact Info (5 Cols) */}
           <div className="lg:col-span-5 space-y-4">
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4 text-xs">
-              <h3 className="font-bold text-slate-900 text-sm font-serif">TexPrint Mill Headquarters</h3>
+              <h3 className="font-bold text-slate-900 text-sm font-serif">Fabric Print Mill Headquarters</h3>
 
               <div className="flex items-start space-x-3 text-slate-600">
                 <MapPin className="w-5 h-5 text-blue-900 shrink-0 mt-0.5" />
@@ -51,7 +51,7 @@ export const ContactUsPage: React.FC = () => {
                 <Phone className="w-5 h-5 text-blue-900 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-slate-900 block">Phone & WhatsApp</strong>
-                  <span>+91 99000 11223 / +91 98765 43210</span>
+                  <span>+91 90000 11223</span>
                 </div>
               </div>
 
@@ -59,12 +59,26 @@ export const ContactUsPage: React.FC = () => {
                 <Mail className="w-5 h-5 text-blue-900 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-slate-900 block">Email Support</strong>
-                  <span>support@texprintfabrics.com</span>
+                  <span>support@fabricprint.in</span>
                 </div>
               </div>
 
               <div className="bg-blue-50 p-3 rounded-xl border border-blue-100 text-[11px] text-blue-900">
                 <strong>Mill Operating Hours:</strong> Monday - Saturday (9:00 AM - 8:00 PM IST)
+              </div>
+
+              {/* Store GMB Google Location Map */}
+              <div className="rounded-xl overflow-hidden border border-slate-200 shadow-sm mt-4">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3915.90718613803!2d77.05082977516422!3d11.04558525417106!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba859be80490941%3A0xad1333f6e47df07a!2sT-Shirt%20Printing%20%26%20Uniforms!5e0!3m2!1sen!2sin!4v1786275298051!5m2!1sen!2sin"
+                  width="100%"
+                  height="180"
+                  style={{ border: 0 }}
+                  allowFullScreen={false}
+                  loading="lazy"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  title="Fabric Print GMB Location"
+                />
               </div>
             </div>
           </div>

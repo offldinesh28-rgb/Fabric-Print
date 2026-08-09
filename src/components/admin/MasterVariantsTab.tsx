@@ -100,7 +100,7 @@ export const MasterVariantsTab: React.FC<MasterVariantsTabProps> = ({
                   <td className="p-3.5 font-mono text-blue-400">{v.finishType}</td>
                   <td className="p-3.5 font-bold font-mono">
                     <span className={v.priceModifier > 0 ? 'text-amber-400' : 'text-emerald-400'}>
-                      {v.priceModifier > 0 ? `+₹${v.priceModifier} / +$${v.priceModifier}` : 'Standard (+₹0)'}
+                      {v.priceModifier > 0 ? `+₹${v.priceModifier} / m` : 'Standard (+₹0)'}
                     </span>
                   </td>
                   <td className="p-3.5 text-right space-x-2">
@@ -177,7 +177,7 @@ export const MasterVariantsTab: React.FC<MasterVariantsTabProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-400 mb-1">Price Modifier (+₹ / +$) *</label>
+                <label className="block font-semibold text-slate-400 mb-1">Price Modifier (+₹ / m) *</label>
                 <input
                   type="number"
                   step="1"

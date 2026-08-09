@@ -523,11 +523,11 @@ export const AddProductWizard: React.FC<AddProductWizardProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div>
                 <label className="block text-slate-300 font-semibold mb-1">
-                  Base Price / Meter ($ or ₹) *
+                  Base Price / Meter (₹) *
                 </label>
                 <input
                   type="number"
-                  step="0.1"
+                  step="1"
                   required
                   value={pricePerMeter}
                   onChange={(e) => setPricePerMeter(parseFloat(e.target.value) || 0)}
@@ -537,11 +537,11 @@ export const AddProductWizard: React.FC<AddProductWizardProps> = ({
 
               <div>
                 <label className="block text-slate-300 font-semibold mb-1">
-                  Print Surcharge / Meter ($ or ₹)
+                  Print Surcharge / Meter (₹)
                 </label>
                 <input
                   type="number"
-                  step="0.1"
+                  step="1"
                   value={printSurcharge}
                   onChange={(e) => setPrintSurcharge(parseFloat(e.target.value) || 0)}
                   className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-amber-400 font-extrabold text-base focus:outline-none focus:ring-1 focus:ring-amber-500"
@@ -550,11 +550,11 @@ export const AddProductWizard: React.FC<AddProductWizardProps> = ({
 
               <div>
                 <label className="block text-slate-300 font-semibold mb-1">
-                  Test Swatch Price (20x20 cm) ($ or ₹)
+                  Test Swatch Price (20x20 cm) (₹)
                 </label>
                 <input
                   type="number"
-                  step="0.1"
+                  step="1"
                   value={swatchTestPrice}
                   onChange={(e) => setSwatchTestPrice(parseFloat(e.target.value) || 0)}
                   className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white font-bold"
@@ -563,11 +563,11 @@ export const AddProductWizard: React.FC<AddProductWizardProps> = ({
 
               <div>
                 <label className="block text-slate-300 font-semibold mb-1">
-                  Big Swatch Price (75x100 cm) ($ or ₹)
+                  Big Swatch Price (75x100 cm) (₹)
                 </label>
                 <input
                   type="number"
-                  step="0.1"
+                  step="1"
                   value={swatchBigPrice}
                   onChange={(e) => setSwatchBigPrice(parseFloat(e.target.value) || 0)}
                   className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white font-bold"
@@ -721,7 +721,7 @@ export const AddProductWizard: React.FC<AddProductWizardProps> = ({
                 <div>
                   <span className="text-slate-500 block">Base Price:</span>
                   <span className="font-bold text-emerald-400 font-mono">
-                    ${pricePerMeter.toFixed(2)}/m
+                    ₹{pricePerMeter.toFixed(2)}/m
                   </span>
                 </div>
                 <div>
@@ -739,7 +739,7 @@ export const AddProductWizard: React.FC<AddProductWizardProps> = ({
                 <div>
                   <span className="text-slate-500 block">Print Surcharge:</span>
                   <span className="font-bold text-amber-400 font-mono">
-                    +${printSurcharge.toFixed(2)}/m
+                    +₹{printSurcharge.toFixed(2)}/m
                   </span>
                 </div>
               </div>
@@ -839,7 +839,7 @@ export const AddProductWizard: React.FC<AddProductWizardProps> = ({
                   </span>
                   <h4 className="font-bold text-white text-sm truncate">{publishedProductData.name}</h4>
                   <p className="text-amber-400 text-xs font-mono font-bold mt-0.5">
-                    ${publishedProductData.price_per_meter?.toFixed(2) || '6.50'} / meter
+                    ₹{publishedProductData.price_per_meter?.toFixed(2) || '480.00'} / meter
                   </p>
                 </div>
               </div>

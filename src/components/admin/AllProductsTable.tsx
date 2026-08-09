@@ -127,10 +127,10 @@ export const AllProductsTable: React.FC<AllProductsTableProps> = ({
                     </td>
                     <td className="p-3.5 font-extrabold text-white font-mono">{prod.gsm} GSM</td>
                     <td className="p-3.5 font-extrabold text-emerald-400 font-mono">
-                      ${prod.price_per_meter.toFixed(2)}/m
+                      ₹{prod.price_per_meter.toFixed(2)}/m
                     </td>
                     <td className="p-3.5 font-bold text-amber-400 font-mono">
-                      +${prod.print_surcharge_per_meter.toFixed(2)}/m
+                      +₹{prod.print_surcharge_per_meter.toFixed(2)}/m
                     </td>
                     <td className="p-3.5 text-right space-x-2">
                       <button
@@ -195,7 +195,7 @@ export const AllProductsTable: React.FC<AllProductsTableProps> = ({
                 <div className="min-w-0 flex-1">
                   <h4 className="font-bold text-white text-sm truncate">{productToDelete.name}</h4>
                   <p className="text-amber-400 text-[11px] font-semibold">{productToDelete.category} • {productToDelete.gsm} GSM</p>
-                  <p className="text-slate-400 text-[10px]">${productToDelete.price_per_meter.toFixed(2)} / meter</p>
+                  <p className="text-slate-400 text-[10px]">₹{productToDelete.price_per_meter.toFixed(2)} / meter</p>
                 </div>
               </div>
 

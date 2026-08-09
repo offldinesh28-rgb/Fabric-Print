@@ -5,7 +5,8 @@ import { INITIAL_USERS } from '../data/mockData';
 interface AuthContextType {
   currentUser: User | null;
   isAdmin: boolean;
-  login: (email: string) => void;
+  login: (email: string, password?: string) => { user: User; isAdmin: boolean };
+  register: (name: string, phone: string, email: string, password?: string) => User;
   logout: () => void;
   toggleAdminMode: () => void;
   saveAddress: (address: Omit<Address, 'id'>) => void;
@@ -27,15 +28,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [currentUser]);
 
-  const login = (email: string) => {
-    if (email.includes('admin')) {
-      setCurrentUser(INITIAL_USERS[1]);
+  const login = (email: string, _password?: string) => {
+    let userToSet: User;
+    if (email.toLowerCase().includes('admin') || email.toLowerCase() === 'admin@fabricprint.in') {
+      userToSet = INITIAL_USERS[1];
     } else {
       const found = INITIAL_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
       if (found) {
-        setCurrentUser(found);
+        userToSet = found;
       } else {
-        const newUser: User = {
+        userToSet = {
           id: `usr-${Date.now()}`,
           name: email.split('@')[0],
           email,
@@ -43,9 +45,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           addresses: [],
           createdAt: new Date().toISOString()
         };
-        setCurrentUser(newUser);
       }
     }
+    setCurrentUser(userToSet);
+    return { user: userToSet, isAdmin: userToSet.role === 'admin' };
+  };
+
+  const register = (name: string, phone: string, email: string, _password?: string) => {
+    const newUser: User = {
+      id: `usr-${Date.now()}`,
+      name,
+      email,
+      phone,
+      role: 'user',
+      addresses: [],
+      createdAt: new Date().toISOString()
+    };
+    setCurrentUser(newUser);
+    return newUser;
   };
 
   const logout = () => {
@@ -79,6 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         currentUser,
         isAdmin: currentUser?.role === 'admin',
         login,
+        register,
         logout,
         toggleAdminMode,
         saveAddress

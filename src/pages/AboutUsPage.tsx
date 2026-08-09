@@ -14,13 +14,13 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onGoToFabrics, onOpenB
         <div className="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 shadow-xl border border-slate-800 space-y-4 text-center max-w-4xl mx-auto relative overflow-hidden">
           <div className="inline-flex items-center space-x-2 bg-blue-900/80 border border-blue-700 px-3 py-1 rounded-full text-xs font-bold text-amber-400 uppercase tracking-widest">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Tex India Mart Benchmark</span>
+            <span>Fabric Print Excellence</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-black font-serif italic text-white">
-            About TexPrint Mill & Digital Printing
+            About Fabric Print & Digital Textile Solutions
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Replicating authentic Tex India Mart textile standards. We bridge traditional Indian weaving artistry in Surat with cutting-edge 300 DPI reactive digital fabric printing for global designers and garment makers.
+            Leading custom fabric printing solutions in India. We bridge traditional weaving artistry in Surat with cutting-edge 300 DPI reactive digital fabric printing for fashion designers, brands, and garment makers.
           </p>
         </div>
 

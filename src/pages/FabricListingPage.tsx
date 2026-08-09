@@ -31,8 +31,8 @@ export const FabricListingPage: React.FC<FabricListingPageProps> = ({
   // Dynamic category list from products
   const categories = useMemo(() => {
     const list = ['All'];
-    const uniqueFromProducts = Array.from(new Set(products.map(p => p.category))).filter(Boolean);
-    uniqueFromProducts.forEach(cat => {
+    const uniqueFromProducts = Array.from(new Set(products.map(p => p.category))).filter((c): c is string => Boolean(c));
+    uniqueFromProducts.forEach((cat: string) => {
       if (!list.map(c => c.toLowerCase()).includes(cat.toLowerCase())) {
         list.push(cat);
       }
@@ -190,7 +190,7 @@ export const FabricListingPage: React.FC<FabricListingPageProps> = ({
               <div className="space-y-2">
                 <div className="flex justify-between items-center text-xs font-bold text-slate-800 uppercase tracking-wider">
                   <span>Price per Meter</span>
-                  <span className="text-blue-900">${minPrice} - ${maxPrice}</span>
+                  <span className="text-blue-900">₹{minPrice} - ₹{maxPrice}</span>
                 </div>
                 <input
                   type="range"
