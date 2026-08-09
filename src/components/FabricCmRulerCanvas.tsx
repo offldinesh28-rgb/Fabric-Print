@@ -101,7 +101,13 @@ export const FabricCmRulerCanvas: React.FC<FabricCmRulerCanvasProps> = ({
 
   // Normalize layout type
   const normalizedLayout =
-    layoutType === 'grid' || layoutType === 'straight' ? 'repeat_grid' : layoutType === 'centered' ? 'single' : layoutType;
+    layoutType === 'grid' || layoutType === 'straight'
+      ? 'repeat_grid'
+      : layoutType === 'centered'
+      ? 'single'
+      : layoutType === 'drop'
+      ? 'half_drop'
+      : layoutType;
 
   // Frame aspect ratio class
   const getFrameAspectClass = () => {

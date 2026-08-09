@@ -128,6 +128,7 @@ export interface CartItem {
   printOptions: PrintOptions;
   calculatedPricePerUnit: number;
   itemTotalPrice: number;
+  selectedFabricVariant?: string;
 }
 
 export interface Address {

@@ -32,6 +32,65 @@ let localMasterGsm: MasterGsmWeight[] = [...INITIAL_MASTER_GSM];
 let localMasterSizeFormats: MasterFabricSizeFormat[] = [...INITIAL_MASTER_SIZE_FORMATS];
 let localMasterVariants: MasterFabricVariantBase[] = [...INITIAL_MASTER_VARIANTS];
 
+function getLocalProducts(): Product[] {
+  try {
+    const data = localStorage.getItem('custom_products');
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveToLocalProducts(prod: Product) {
+  try {
+    const list = getLocalProducts();
+    const filtered = list.filter(p => p.id !== prod.id);
+    filtered.unshift(prod);
+    localStorage.setItem('custom_products', JSON.stringify(filtered));
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function updateLocalProduct(prod: Product) {
+  try {
+    const list = getLocalProducts();
+    const idx = list.findIndex(p => p.id === prod.id);
+    if (idx !== -1) {
+      list[idx] = prod;
+    } else {
+      list.unshift(prod);
+    }
+    localStorage.setItem('custom_products', JSON.stringify(list));
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function deleteLocalProduct(id: string) {
+  try {
+    const list = getLocalProducts();
+    const filtered = list.filter(p => p.id !== id);
+    localStorage.setItem('custom_products', JSON.stringify(filtered));
+    
+    const deletedIds = JSON.parse(localStorage.getItem('deleted_product_ids') || '[]');
+    if (!deletedIds.includes(id)) {
+      deletedIds.push(id);
+      localStorage.setItem('deleted_product_ids', JSON.stringify(deletedIds));
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function getDeletedProductIds(): string[] {
+  try {
+    return JSON.parse(localStorage.getItem('deleted_product_ids') || '[]');
+  } catch {
+    return [];
+  }
+}
+
 export async function fetchProducts(category?: string, search?: string): Promise<Product[]> {
   try {
     let url = '/api/products';
@@ -42,10 +101,33 @@ export async function fetchProducts(category?: string, search?: string): Promise
 
     const res = await fetch(url);
     if (!res.ok) throw new Error('Failed to fetch products');
-    return await res.json();
+    const apiProducts = await res.json();
+    
+    const locals = getLocalProducts();
+    const deletedIds = getDeletedProductIds();
+    let combined = [...apiProducts];
+    
+    locals.forEach(lp => {
+      if (!combined.some(ap => ap.id === lp.id)) {
+        combined.unshift(lp);
+      }
+    });
+    
+    return combined.filter(p => !deletedIds.includes(p.id));
   } catch (err) {
-    console.warn('API unavailable, returning local data:', err);
+    console.warn('API unavailable, returning combined local data:', err);
     let list = [...INITIAL_PRODUCTS];
+    const locals = getLocalProducts();
+    const deletedIds = getDeletedProductIds();
+    
+    locals.forEach(lp => {
+      if (!list.some(p => p.id === lp.id)) {
+        list.unshift(lp);
+      }
+    });
+
+    list = list.filter(p => !deletedIds.includes(p.id));
+
     if (category && category !== 'All') {
       list = list.filter(p => p.category.toLowerCase() === category.toLowerCase());
     }
@@ -58,38 +140,86 @@ export async function fetchProducts(category?: string, search?: string): Promise
 }
 
 export async function fetchProductById(id: string): Promise<Product | null> {
+  const deletedIds = getDeletedProductIds();
+  if (deletedIds.includes(id)) return null;
+
   try {
     const res = await fetch(`/api/products/${id}`);
     if (!res.ok) throw new Error('Product not found');
     return await res.json();
   } catch (err) {
+    const locals = getLocalProducts();
+    const matchedLocal = locals.find(p => p.id === id);
+    if (matchedLocal) return matchedLocal;
+
     return INITIAL_PRODUCTS.find(p => p.id === id) || null;
   }
 }
 
 export async function createProduct(product: Partial<Product>): Promise<Product> {
-  const res = await fetch('/api/products', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(product)
-  });
-  if (!res.ok) throw new Error('Failed to create product');
-  return await res.json();
+  try {
+    const res = await fetch('/api/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(product)
+    });
+    if (!res.ok) throw new Error('Failed to create product');
+    const created = await res.json();
+    saveToLocalProducts(created);
+    return created;
+  } catch (err) {
+    console.warn('API createProduct failed, saving to local storage:', err);
+    const newProduct: Product = {
+      ...product,
+      id: `p-${Date.now()}`,
+      in_stock: product.in_stock ?? true,
+      images: product.images && product.images.length > 0 ? product.images : ['https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&q=80&w=1000'],
+      rating: 5.0,
+      reviews_count: 0
+    } as Product;
+    saveToLocalProducts(newProduct);
+    return newProduct;
+  }
 }
 
 export async function updateProduct(id: string, product: Partial<Product>): Promise<Product> {
-  const res = await fetch(`/api/products/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(product)
-  });
-  if (!res.ok) throw new Error('Failed to update product');
-  return await res.json();
+  try {
+    const res = await fetch(`/api/products/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(product)
+    });
+    if (!res.ok) throw new Error('Failed to update product');
+    const updated = await res.json();
+    updateLocalProduct(updated);
+    return updated;
+  } catch (err) {
+    console.warn('API updateProduct failed, updating in local storage:', err);
+    const locals = getLocalProducts();
+    const idx = locals.findIndex(p => p.id === id);
+    let updated: Product;
+    if (idx !== -1) {
+      locals[idx] = { ...locals[idx], ...product };
+      updated = locals[idx];
+      localStorage.setItem('custom_products', JSON.stringify(locals));
+    } else {
+      const initial = INITIAL_PRODUCTS.find(p => p.id === id);
+      updated = { ...(initial || {}), ...product } as Product;
+      saveToLocalProducts(updated);
+    }
+    return updated;
+  }
 }
 
 export async function deleteProduct(id: string): Promise<void> {
-  const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
-  if (!res.ok) throw new Error('Failed to delete product');
+  try {
+    const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Failed to delete product');
+  } catch (err) {
+    console.warn('API deleteProduct failed, deleting from local storage:', err);
+  } finally {
+    deleteLocalProduct(id);
+  }
 }
 
 export async function fetchCategories(): Promise<Category[]> {
