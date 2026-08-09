@@ -103,11 +103,11 @@ export const FabricCard: React.FC<FabricCardProps> = ({ product, onSelectProduct
           <div>
             <div className="text-[10px] text-slate-400 font-semibold uppercase">Base Price</div>
             <div className="text-sm font-extrabold text-slate-900">
-              ${product.price_per_meter.toFixed(2)}
+              ₹ {product.price_per_meter.toFixed(2)}
               <span className="text-[11px] text-slate-500 font-normal"> / meter</span>
             </div>
             <div className="text-[10px] text-emerald-600 font-medium">
-              Swatch test: ${product.swatch_test_price.toFixed(2)}
+              Swatch test: ₹ {product.swatch_test_price.toFixed(2)}
             </div>
           </div>
 

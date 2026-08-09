@@ -162,7 +162,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onGoToCheckout, onGoToFa
                       </div>
 
                       <div className="font-extrabold text-slate-900 text-xs">
-                        ${item.itemTotalPrice.toFixed(2)}
+                        ₹ {item.itemTotalPrice.toFixed(2)}
                       </div>
                     </div>
                   </div>
@@ -198,29 +198,29 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onGoToCheckout, onGoToFa
               <div className="space-y-1.5 text-xs text-slate-600 border-t border-slate-200 pt-2">
                 <div className="flex justify-between">
                   <span>Subtotal:</span>
-                  <span className="font-semibold text-slate-900">${subtotal.toFixed(2)}</span>
+                  <span className="font-semibold text-slate-900">₹ {subtotal.toFixed(2)}</span>
                 </div>
 
                 {discount > 0 && (
                   <div className="flex justify-between text-emerald-600 font-semibold">
                     <span>Discount ({couponCode}):</span>
-                    <span>-${discount.toFixed(2)}</span>
+                    <span>-₹ {discount.toFixed(2)}</span>
                   </div>
                 )}
 
                 <div className="flex justify-between">
                   <span>Estimated Shipping:</span>
-                  <span>{shippingFee === 0 ? 'FREE' : `$${shippingFee.toFixed(2)}`}</span>
+                  <span>{shippingFee === 0 ? 'FREE' : `₹ ${shippingFee.toFixed(2)}`}</span>
                 </div>
 
                 <div className="flex justify-between">
                   <span>Tax (5% GST):</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>₹ {tax.toFixed(2)}</span>
                 </div>
 
                 <div className="flex justify-between text-sm font-black text-slate-900 border-t border-slate-200 pt-1.5">
                   <span>Total Amount:</span>
-                  <span className="text-blue-900 font-serif text-base">${total.toFixed(2)}</span>
+                  <span className="text-blue-900 font-serif text-base">₹ {total.toFixed(2)}</span>
                 </div>
               </div>
 

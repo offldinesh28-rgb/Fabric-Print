@@ -348,7 +348,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onOrderSuccess, onBa
                         x {item.quantity}
                       </p>
                     </div>
-                    <span className="font-extrabold text-slate-900">${item.itemTotalPrice.toFixed(2)}</span>
+                    <span className="font-extrabold text-slate-900">₹ {item.itemTotalPrice.toFixed(2)}</span>
                   </div>
                 ))}
               </div>
@@ -358,25 +358,25 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onOrderSuccess, onBa
               <div className="space-y-2 text-xs text-slate-600">
                 <div className="flex justify-between">
                   <span>Subtotal:</span>
-                  <span className="font-semibold text-slate-900">${subtotal.toFixed(2)}</span>
+                  <span className="font-semibold text-slate-900">₹ {subtotal.toFixed(2)}</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-emerald-600 font-semibold">
                     <span>Discount:</span>
-                    <span>-${discount.toFixed(2)}</span>
+                    <span>-₹ {discount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
                   <span>Shipping:</span>
-                  <span>{shippingFee === 0 ? 'FREE' : `$${shippingFee.toFixed(2)}`}</span>
+                  <span>{shippingFee === 0 ? 'FREE' : `₹ ${shippingFee.toFixed(2)}`}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Tax (5% GST):</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>₹ {tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-base font-black text-slate-900 pt-2 border-t border-slate-200">
                   <span>Total Payable:</span>
-                  <span className="text-blue-900 font-serif text-lg">${total.toFixed(2)}</span>
+                  <span className="text-blue-900 font-serif text-lg">₹ {total.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -392,7 +392,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onOrderSuccess, onBa
                 id="place-order-button"
               >
                 <Lock className="w-4 h-4 text-amber-400" />
-                <span>Pay & Confirm Order (${total.toFixed(2)})</span>
+                <span>Pay & Confirm Order (₹ {total.toFixed(2)})</span>
               </button>
 
               <div className="text-[10px] text-slate-400 text-center flex items-center justify-center space-x-1 pt-1">
@@ -419,7 +419,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onOrderSuccess, onBa
                   <p className="text-[10px] text-slate-300">TexPrint Fabrics & Custom Print</p>
                 </div>
               </div>
-              <span className="text-xs font-black text-amber-400">${total.toFixed(2)}</span>
+              <span className="text-xs font-black text-amber-400">₹ {total.toFixed(2)}</span>
             </div>
 
             {/* Modal Body */}
