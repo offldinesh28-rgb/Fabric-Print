@@ -397,7 +397,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onOrderSuccess, onBa
 
               <div className="text-[10px] text-slate-400 text-center flex items-center justify-center space-x-1 pt-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                <span>256-bit SSL Encrypted • Tex India Mart Quality Assurance</span>
+                <span>256-bit SSL Encrypted • Fabric Print Quality Assurance</span>
               </div>
             </div>
           </div>
@@ -416,7 +416,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onOrderSuccess, onBa
                 </div>
                 <div>
                   <h4 className="font-bold text-xs tracking-wide">Razorpay Checkout</h4>
-                  <p className="text-[10px] text-slate-300">TexPrint Fabrics & Custom Print</p>
+                  <p className="text-[10px] text-slate-300">Fabric Print Premium Textiles</p>
                 </div>
               </div>
               <span className="text-xs font-black text-amber-400">₹ {total.toFixed(2)}</span>

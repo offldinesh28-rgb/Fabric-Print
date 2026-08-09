@@ -278,7 +278,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onProductsChange
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-black font-serif text-white">
-                TexPrint Mill Admin Portal
+                Fabric Print Mill Admin Portal
               </h1>
               <p className="text-xs text-slate-400 mt-0.5">
                 Manage fabric inventory, master specs, custom print design approvals & orders.

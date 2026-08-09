@@ -51,6 +51,7 @@ export function MainAppContent() {
 
   useEffect(() => {
     loadData();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeTab]);
 
   const handleSelectCategory = (catName: string) => {
@@ -100,7 +101,7 @@ export function MainAppContent() {
           <div className="flex flex-col items-center justify-center py-24 space-y-4">
             <div className="w-10 h-10 border-4 border-blue-900 border-t-transparent rounded-full animate-spin" />
             <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-              Loading TexPrint Mill Collection...
+              Loading Fabric Print Mill Collection...
             </p>
           </div>
         ) : (

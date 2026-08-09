@@ -35,7 +35,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ onSelectProduct, o
     return (
       <div className="max-w-md mx-auto my-16 p-8 bg-white rounded-3xl border border-slate-200 shadow-md text-center space-y-4">
         <UserIcon className="w-12 h-12 text-blue-900 mx-auto" />
-        <h2 className="text-xl font-bold text-slate-900 font-serif">Welcome to TexPrint</h2>
+        <h2 className="text-xl font-bold text-slate-900 font-serif">Welcome to Fabric Print</h2>
         <p className="text-xs text-slate-500">Sign in or register to track your custom fabric print orders.</p>
         <button
           onClick={onGoToFabrics}
@@ -109,7 +109,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ onSelectProduct, o
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-slate-900 text-base">Order History & Print Status</h3>
-              <span className="text-xs text-slate-500 font-medium">Updated real-time from TexPrint Mill</span>
+              <span className="text-xs text-slate-500 font-medium">Updated real-time from Fabric Print Mill</span>
             </div>
 
             {loadingOrders ? (

@@ -2,7 +2,7 @@ import React from 'react';
 import { MessageCircle } from 'lucide-react';
 
 export const WhatsAppButton: React.FC = () => {
-  const whatsappUrl = "https://wa.me/919900011223?text=Hello%20TexPrint,%20I%20have%20a%20question%20about%20fabric%20custom%20printing%20or%20bulk%20orders.";
+  const whatsappUrl = "https://wa.me/919900011223?text=Hello%20Fabric%20Print,%20I%20have%20a%20question%20about%20fabric%20custom%20printing%20or%20bulk%20orders.";
 
   return (
     <a

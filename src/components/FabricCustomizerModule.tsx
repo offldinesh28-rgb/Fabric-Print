@@ -321,7 +321,7 @@ export const FabricCustomizerModule: React.FC<FabricCustomizerModuleProps> = ({
           <div className="space-y-1.5">
             <div className="inline-flex items-center space-x-2 bg-blue-900/80 border border-blue-700 px-3 py-1 rounded-full text-[11px] font-bold text-amber-400 uppercase tracking-widest">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Tex India Mart Customizer Engine</span>
+              <span>Fabric Print Customizer Engine</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-black font-serif text-white">
               Fabric Customization & Print Simulator

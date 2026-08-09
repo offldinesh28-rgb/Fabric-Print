@@ -30,9 +30,9 @@ export const HomePage: React.FC<HomePageProps> = ({
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center space-x-2 bg-slate-800/80 border border-slate-700 px-3.5 py-1.5 rounded-full text-xs font-semibold text-amber-400">
+            <div className="inline-flex items-center space-x-2 bg-slate-800/80 border border-slate-700 px-3.5 py-1.5 rounded-full text-xs font-semibold text-amber-400 mb-3">
               <Sparkles className="w-4 h-4 text-amber-400" />
-              <span>Tex India Mart Grade Fabrics & Custom Reactive Digital Printing</span>
+              <span>Fabric Print Premium Grade Fabrics & Custom Reactive Digital Printing</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-serif tracking-tight leading-[1.1] text-white">
@@ -162,8 +162,8 @@ export const HomePage: React.FC<HomePageProps> = ({
       <section className="bg-slate-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="bg-red-600/20 text-red-400 text-xs font-extrabold uppercase px-3 py-1 rounded-full border border-red-500/30">
-              Tex India Mart Workflow
+            <span className="inline-block bg-red-600/20 text-red-400 text-xs font-extrabold uppercase px-3 py-1 rounded-full border border-red-500/30 mb-3">
+              Fabric Print Workflow
             </span>
             <h2 className="text-3xl font-black font-serif text-white">
               How Custom Fabric Printing Works
@@ -249,10 +249,12 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* BULK ORDER BANNER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-blue-900 text-white rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8 border border-blue-900/50">
-          <div className="space-y-3 max-w-xl">
-            <span className="bg-amber-400 text-slate-950 text-[10px] font-extrabold uppercase px-3 py-1 rounded-full">
-              Wholesale & Mill Supply
-            </span>
+          <div className="flex flex-col gap-3 max-w-xl">
+            <div>
+              <span className="inline-block bg-amber-400 text-slate-950 text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-full mb-3">
+                Wholesale & Mill Supply
+              </span>
+            </div>
             <h3 className="text-2xl sm:text-3xl font-black font-serif text-white">
               B2B Bulk Textile Orders & Custom Color Lab Dips
             </h3>

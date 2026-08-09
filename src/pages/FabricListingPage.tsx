@@ -107,10 +107,10 @@ export const FabricListingPage: React.FC<FabricListingPageProps> = ({
         {/* Page Header */}
         <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-bold text-blue-900 uppercase tracking-wider block">
-              TexPrint Catalog
+            <span className="text-xs font-bold text-blue-900 uppercase tracking-wider block mb-2.5">
+              Fabric Print Collection
             </span>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 font-serif mt-1">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 font-serif">
               {selectedCategory === 'All' ? 'All Fabrics & Digital Printing Bases' : `${selectedCategory} Fabrics`}
             </h1>
             <p className="text-xs text-slate-500 mt-1">

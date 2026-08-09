@@ -70,7 +70,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       'https://images.unsplash.com/photo-1603251578711-3290ca1a0187?auto=format&fit=crop&q=80&w=1000',
       'https://images.unsplash.com/photo-1528458876861-544fd1761a91?auto=format&fit=crop&q=80&w=1000'
     ],
-    description: 'Tex India Mart grade high-density fine Cotton Mulmul. Exceptionally lightweight, soft to skin, ideal for scarves, summer dresses, kurtis, and vibrant digital pigment/reactive prints.',
+    description: 'Fabric Print premium high-density fine Cotton Mulmul. Exceptionally lightweight, soft to skin, ideal for scarves, summer dresses, kurtis, and vibrant digital pigment/reactive prints.',
     weave_type: 'Plain Weave',
     composition: '100% Fine Combed Cotton',
     in_stock: true,
@@ -287,8 +287,8 @@ export const INITIAL_USERS: User[] = [
   },
   {
     id: 'usr-admin',
-    name: 'TexPrint Admin',
-    email: 'admin@texprint.com',
+    name: 'Fabric Print Admin',
+    email: 'admin@fabricprint.com',
     phone: '+91 99000 11223',
     role: 'admin',
     addresses: [],
