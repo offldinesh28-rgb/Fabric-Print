@@ -188,7 +188,7 @@ export const FabricCmRulerCanvas: React.FC<FabricCmRulerCanvasProps> = ({
                 <div
                   className="w-full h-full transition-all duration-300"
                   style={{
-                    backgroundImage: `url(${designUrl})`,
+                    backgroundImage: `url("${designUrl}")`,
                     backgroundSize: `${scalePercentage * 1.5}px ${scalePercentage * 1.5}px`,
                     backgroundRepeat: 'repeat',
                     transform: `rotate(${rotation}deg)`,
@@ -204,7 +204,7 @@ export const FabricCmRulerCanvas: React.FC<FabricCmRulerCanvasProps> = ({
                 <div
                   className="w-full h-full transition-all duration-300"
                   style={{
-                    backgroundImage: `url(${designUrl})`,
+                    backgroundImage: `url("${designUrl}")`,
                     backgroundSize: `${scalePercentage * 1.6}px ${scalePercentage * 1.6}px`,
                     backgroundRepeat: 'repeat',
                     transform: `rotate(${rotation}deg)`,

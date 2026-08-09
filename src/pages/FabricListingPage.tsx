@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Filter, SlidersHorizontal, Search, RotateCcw, Check, ArrowUpDown } from 'lucide-react';
 import { Product, ProductFilterState } from '../types';
 import { FabricCard } from '../components/FabricCard';
@@ -20,13 +20,25 @@ export const FabricListingPage: React.FC<FabricListingPageProps> = ({
   setSearchQuery,
   onSelectProduct
 }) => {
+  // Dynamic maximum price from products
+  const maxAvailablePrice = useMemo(() => {
+    if (products.length === 0) return 1000;
+    const maxVal = Math.max(...products.map(p => p.price_per_meter || 0), 100);
+    return Math.ceil(maxVal);
+  }, [products]);
+
   // Filter state
   const [minPrice, setMinPrice] = useState<number>(0);
-  const [maxPrice, setMaxPrice] = useState<number>(100);
+  const [maxPrice, setMaxPrice] = useState<number>(1000);
   const [selectedGsm, setSelectedGsm] = useState<string>('All');
   const [selectedColor, setSelectedColor] = useState<string>('All');
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'rating'>('featured');
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+
+  // Sync maxPrice when products list changes or loads
+  useEffect(() => {
+    setMaxPrice(maxAvailablePrice);
+  }, [products.length, maxAvailablePrice]);
 
   // Dynamic category list from products
   const categories = useMemo(() => {
@@ -95,7 +107,7 @@ export const FabricListingPage: React.FC<FabricListingPageProps> = ({
     setSelectedCategory('All');
     setSearchQuery('');
     setMinPrice(0);
-    setMaxPrice(25);
+    setMaxPrice(maxAvailablePrice);
     setSelectedGsm('All');
     setSelectedColor('All');
     setSortBy('featured');
@@ -195,9 +207,9 @@ export const FabricListingPage: React.FC<FabricListingPageProps> = ({
                 <input
                   type="range"
                   min="0"
-                  max="100"
+                  max={maxAvailablePrice}
                   step="1"
-                  value={maxPrice}
+                  value={maxPrice > maxAvailablePrice ? maxAvailablePrice : maxPrice}
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
                   className="w-full accent-blue-900"
                 />

@@ -106,8 +106,8 @@ export async function uploadDesignFile(file: File): Promise<{ url: string; fileN
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = async (e) => {
+      const base64Data = e.target?.result as string;
       try {
-        const base64Data = e.target?.result as string;
         const fileSizeMb = file.size / (1024 * 1024);
 
         const res = await fetch('/api/upload-design', {
@@ -122,14 +122,22 @@ export async function uploadDesignFile(file: File): Promise<{ url: string; fileN
         });
 
         if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(errData.error || 'Upload failed');
+          console.warn('Upload API returned non-OK status, falling back to client-side base64 preview.');
+          resolve({ url: base64Data, fileName: file.name });
+          return;
         }
 
-        const data = await res.json();
-        resolve({ url: data.url, fileName: file.name });
+        const contentType = res.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await res.json();
+          resolve({ url: data.url, fileName: file.name });
+        } else {
+          console.warn('Upload API returned non-JSON response, falling back to client-side base64 preview.');
+          resolve({ url: base64Data, fileName: file.name });
+        }
       } catch (err) {
-        reject(err);
+        console.warn('Upload API failed, falling back to client-side base64 preview:', err);
+        resolve({ url: base64Data, fileName: file.name });
       }
     };
     reader.onerror = () => reject(new Error('Failed to read artwork file'));

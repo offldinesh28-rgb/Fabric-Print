@@ -152,6 +152,13 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
       pricePerUnit = product.price_per_meter || 480;
     }
 
+    // Add variant base surcharge (per meter or unit)
+    if (selectedFabricVariant === 'Organic Bio-Washed') {
+      pricePerUnit += 40;
+    } else if (selectedFabricVariant === 'Optic Bleached White') {
+      pricePerUnit += 25;
+    }
+
     const totalPrice = Number((pricePerUnit * quantity).toFixed(2));
 
     return {
@@ -170,9 +177,11 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
 
     setUploadError('');
 
-    const validTypes = ['image/jpeg', 'image/png', 'image/tiff', 'image/jpg'];
-    if (!validTypes.includes(file.type) && !file.name.toLowerCase().endsWith('.tiff')) {
-      setUploadError('Invalid file format! Please upload JPG, PNG, or TIFF image.');
+    const ext = file.name.toLowerCase().split('.').pop() || '';
+    const validExtensions = ['jpg', 'jpeg', 'png', 'tiff', 'tif', 'webp'];
+    const validTypes = ['image/jpeg', 'image/png', 'image/tiff', 'image/jpg', 'image/webp'];
+    if (!validTypes.includes(file.type) && !validExtensions.includes(ext)) {
+      setUploadError('Invalid file format! Please upload JPG, PNG, WEBP or TIFF image.');
       return;
     }
 
@@ -227,7 +236,8 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
       selectedSizeType,
       quantity,
       printConfig,
-      selectedSizeType === 'meter' ? 1 : undefined
+      selectedSizeType === 'meter' ? 1 : undefined,
+      selectedFabricVariant
     );
 
     if (directCheckout) {

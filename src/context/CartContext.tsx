@@ -8,7 +8,8 @@ interface CartContextType {
     sizeType: SizeOptionType,
     quantity: number,
     printOptions: PrintOptions,
-    meters?: number
+    meters?: number,
+    selectedFabricVariant?: string
   ) => void;
   removeFromCart: (cartItemId: string) => void;
   updateQuantity: (cartItemId: string, newQuantity: number) => void;
@@ -44,7 +45,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     sizeType: SizeOptionType,
     quantity: number,
     printOptions: PrintOptions,
-    meters: number = 1
+    meters: number = 1,
+    selectedFabricVariant?: string
   ) => {
     let basePrice = 0;
     let printSurcharge = 0;
@@ -67,6 +69,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
 
+    // Add selected fabric variant modifier (surcharges are per meter, if it's a swatch we can still apply them as a flat modifier or per-meter)
+    if (selectedFabricVariant === 'Organic Bio-Washed') {
+      basePrice += 40 * (sizeType === 'meter' ? meters : 1);
+    } else if (selectedFabricVariant === 'Optic Bleached White') {
+      basePrice += 25 * (sizeType === 'meter' ? meters : 1);
+    }
+
     const calculatedPricePerUnit = Number((basePrice + printSurcharge).toFixed(2));
     const itemTotalPrice = Number((calculatedPricePerUnit * quantity).toFixed(2));
 
@@ -78,14 +87,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     sizeType: SizeOptionType,
     quantity: number,
     printOptions: PrintOptions,
-    meters: number = 1
+    meters: number = 1,
+    selectedFabricVariant?: string
   ) => {
     const { calculatedPricePerUnit, itemTotalPrice } = calculateUnitAndItemPrice(
       product,
       sizeType,
       quantity,
       printOptions,
-      meters
+      meters,
+      selectedFabricVariant
     );
 
     const newItem: CartItem = {
@@ -97,7 +108,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       quantity,
       printOptions,
       calculatedPricePerUnit,
-      itemTotalPrice
+      itemTotalPrice,
+      selectedFabricVariant
     };
 
     setCart(prev => [...prev, newItem]);
@@ -116,17 +128,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCart(prev =>
       prev.map(item => {
         if (item.id === cartItemId) {
-          const { calculatedPricePerUnit } = calculateUnitAndItemPrice(
+          const { calculatedPricePerUnit, itemTotalPrice } = calculateUnitAndItemPrice(
             item.product,
             item.sizeType,
             newQuantity,
             item.printOptions,
-            item.meters || 1
+            item.meters || 1,
+            item.selectedFabricVariant
           );
           return {
             ...item,
             quantity: newQuantity,
-            itemTotalPrice: Number((calculatedPricePerUnit * newQuantity).toFixed(2))
+            calculatedPricePerUnit,
+            itemTotalPrice
           };
         }
         return item;
