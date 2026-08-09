@@ -22,13 +22,24 @@ export const FabricListingPage: React.FC<FabricListingPageProps> = ({
 }) => {
   // Filter state
   const [minPrice, setMinPrice] = useState<number>(0);
-  const [maxPrice, setMaxPrice] = useState<number>(25);
+  const [maxPrice, setMaxPrice] = useState<number>(100);
   const [selectedGsm, setSelectedGsm] = useState<string>('All');
   const [selectedColor, setSelectedColor] = useState<string>('All');
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'rating'>('featured');
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
-  const categories = ['All', 'Cotton', 'Linen', 'Silk', 'Rayon', 'Modal', 'Organza'];
+  // Dynamic category list from products
+  const categories = useMemo(() => {
+    const list = ['All'];
+    const uniqueFromProducts = Array.from(new Set(products.map(p => p.category))).filter(Boolean);
+    uniqueFromProducts.forEach(cat => {
+      if (!list.map(c => c.toLowerCase()).includes(cat.toLowerCase())) {
+        list.push(cat);
+      }
+    });
+    return list;
+  }, [products]);
+
   const colorsList = ['All', 'Natural White', 'Bleached White', 'Khaki', 'Pink', 'Silver'];
 
   // Filter Logic
@@ -36,7 +47,11 @@ export const FabricListingPage: React.FC<FabricListingPageProps> = ({
     let result = [...products];
 
     if (selectedCategory && selectedCategory !== 'All') {
-      result = result.filter((p) => p.category.toLowerCase() === selectedCategory.toLowerCase());
+      result = result.filter(
+        (p) =>
+          p.category.toLowerCase() === selectedCategory.toLowerCase() ||
+          p.category_id === selectedCategory
+      );
     }
 
     if (searchQuery.trim()) {
@@ -45,8 +60,8 @@ export const FabricListingPage: React.FC<FabricListingPageProps> = ({
         (p) =>
           p.name.toLowerCase().includes(q) ||
           p.description.toLowerCase().includes(q) ||
-          p.count.toLowerCase().includes(q) ||
-          p.color.toLowerCase().includes(q)
+          (p.count && p.count.toLowerCase().includes(q)) ||
+          (p.color && p.color.toLowerCase().includes(q))
       );
     }
 
@@ -180,7 +195,7 @@ export const FabricListingPage: React.FC<FabricListingPageProps> = ({
                 <input
                   type="range"
                   min="0"
-                  max="25"
+                  max="100"
                   step="1"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(Number(e.target.value))}

@@ -38,17 +38,17 @@ export function MainAppContent() {
   const [bulkInquiryOpen, setBulkInquiryOpen] = useState(false);
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
 
-  // Load Categories & Products on mount
+  // Load Categories & Products function
+  const loadData = async () => {
+    const [cats, prods] = await Promise.all([fetchCategories(), fetchProducts()]);
+    setCategories(cats);
+    setProducts(prods);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    async function loadData() {
-      setLoading(true);
-      const [cats, prods] = await Promise.all([fetchCategories(), fetchProducts()]);
-      setCategories(cats);
-      setProducts(prods);
-      setLoading(false);
-    }
     loadData();
-  }, []);
+  }, [activeTab]);
 
   const handleSelectCategory = (catName: string) => {
     setSelectedCategory(catName);
@@ -171,7 +171,7 @@ export function MainAppContent() {
               />
             )}
 
-            {activeTab === 'admin' && <AdminDashboard />}
+            {activeTab === 'admin' && <AdminDashboard onProductsChange={loadData} />}
 
             {activeTab === 'about' && (
               <AboutUsPage

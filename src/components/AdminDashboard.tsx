@@ -17,7 +17,11 @@ import {
   X,
   AlertCircle,
   Sliders,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Shirt,
+  Weight,
+  Ruler,
+  SlidersHorizontal
 } from 'lucide-react';
 import {
   fetchAdminAnalytics,
@@ -31,12 +35,65 @@ import {
   fetchCustomizerSettings,
   updateCustomizerSettings,
   addPreloadedDesign,
-  deletePreloadedDesign
+  deletePreloadedDesign,
+  fetchMasterFabrics,
+  createMasterFabric,
+  updateMasterFabric,
+  deleteMasterFabric,
+  fetchMasterGsm,
+  createMasterGsm,
+  updateMasterGsm,
+  deleteMasterGsm,
+  fetchMasterSizeFormats,
+  createMasterSizeFormat,
+  updateMasterSizeFormat,
+  deleteMasterSizeFormat,
+  fetchMasterVariants,
+  createMasterVariant,
+  updateMasterVariant,
+  deleteMasterVariant,
+  createMasterCategory,
+  updateMasterCategory,
+  deleteMasterCategory
 } from '../services/api';
-import { Product, Order, Category, CategoryType, OrderStatus, AdminCustomizerSettings, PreloadedDesign } from '../types';
+import {
+  Product,
+  Order,
+  Category,
+  CategoryType,
+  OrderStatus,
+  AdminCustomizerSettings,
+  PreloadedDesign,
+  MasterFabric,
+  MasterGsmWeight,
+  MasterFabricSizeFormat,
+  MasterFabricVariantBase
+} from '../types';
 
-export const AdminDashboard: React.FC = () => {
+import { AllProductsTable } from './admin/AllProductsTable';
+import { AddProductWizard } from './admin/AddProductWizard';
+import { MasterCategoriesTab } from './admin/MasterCategoriesTab';
+import { MasterFabricsTab } from './admin/MasterFabricsTab';
+import { MasterGsmTab } from './admin/MasterGsmTab';
+import { MasterSizeFormatsTab } from './admin/MasterSizeFormatsTab';
+import { MasterVariantsTab } from './admin/MasterVariantsTab';
+import { OrderManagementTab } from './admin/OrderManagementTab';
+
+interface AdminDashboardProps {
+  onProductsChange?: () => void;
+}
+
+export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onProductsChange }) => {
   const [activeAdminTab, setActiveAdminTab] = useState<'analytics' | 'products' | 'orders' | 'categories' | 'customizer'>('analytics');
+  const [productsSubSection, setProductsSubSection] = useState<
+    'all_products' | 'add_product' | 'categories' | 'fabrics' | 'gsm' | 'size_formats' | 'variants'
+  >('all_products');
+
+  // Master Data State
+  const [masterFabrics, setMasterFabrics] = useState<MasterFabric[]>([]);
+  const [masterGsm, setMasterGsm] = useState<MasterGsmWeight[]>([]);
+  const [masterSizeFormats, setMasterSizeFormats] = useState<MasterFabricSizeFormat[]>([]);
+  const [masterVariants, setMasterVariants] = useState<MasterFabricVariantBase[]>([]);
 
   // Customizer Settings State
   const [customizerSettings, setCustomizerSettings] = useState<AdminCustomizerSettings>({
@@ -56,28 +113,10 @@ export const AdminDashboard: React.FC = () => {
   const [analytics, setAnalytics] = useState<any>(null);
   const [loadingAnalytics, setLoadingAnalytics] = useState(true);
 
-  // Products Data & Editor Modal
+  // Products Data
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-
-  // Product Form State
-  const [name, setName] = useState('');
-  const [category, setCategory] = useState<CategoryType>('Cotton');
-  const [gsm, setGsm] = useState<number>(100);
-  const [width, setWidth] = useState('44 inches (112 cm)');
-  const [count, setCount] = useState('60s x 60s');
-  const [color, setColor] = useState('Natural White');
-  const [colorCode, setColorCode] = useState('#ffffff');
-  const [pricePerMeter, setPricePerMeter] = useState<number>(6.50);
-  const [swatchTestPrice, setSwatchTestPrice] = useState<number>(2.50);
-  const [swatchBigPrice, setSwatchBigPrice] = useState<number>(6.00);
-  const [printSurcharge, setPrintSurcharge] = useState<number>(2.80);
-  const [description, setDescription] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
-  const [weaveType, setWeaveType] = useState('Plain Weave');
-  const [composition, setComposition] = useState('100% Combed Cotton');
 
   // Orders State & Design Modal
   const [orders, setOrders] = useState<Order[]>([]);
@@ -86,94 +125,61 @@ export const AdminDashboard: React.FC = () => {
   // Load Initial Admin Data
   const reloadAdminData = async () => {
     setLoadingAnalytics(true);
-    const [analyticsData, productsData, categoriesData, ordersData, settingsData] = await Promise.all([
+    const [
+      analyticsData,
+      productsData,
+      categoriesData,
+      ordersData,
+      settingsData,
+      fabricsData,
+      gsmData,
+      sizeFormatsData,
+      variantsData
+    ] = await Promise.all([
       fetchAdminAnalytics(),
       fetchProducts(),
       fetchCategories(),
       fetchOrders(),
-      fetchCustomizerSettings()
+      fetchCustomizerSettings(),
+      fetchMasterFabrics(),
+      fetchMasterGsm(),
+      fetchMasterSizeFormats(),
+      fetchMasterVariants()
     ]);
     setAnalytics(analyticsData);
     setProducts(productsData);
     setCategories(categoriesData);
     setOrders(ordersData);
     setCustomizerSettings(settingsData);
+    setMasterFabrics(fabricsData);
+    setMasterGsm(gsmData);
+    setMasterSizeFormats(sizeFormatsData);
+    setMasterVariants(variantsData);
     setLoadingAnalytics(false);
+    if (onProductsChange) {
+      onProductsChange();
+    }
   };
 
   useEffect(() => {
     reloadAdminData();
   }, []);
 
-  const handleOpenNewProduct = () => {
-    setEditingProduct(null);
-    setName('');
-    setCategory('Cotton');
-    setGsm(100);
-    setWidth('44 inches (112 cm)');
-    setCount('60s x 60s Yarn');
-    setColor('Natural White');
-    setColorCode('#ffffff');
-    setPricePerMeter(6.50);
-    setSwatchTestPrice(2.50);
-    setSwatchBigPrice(6.00);
-    setPrintSurcharge(2.80);
-    setDescription('High quality fabric engineered for fine garments and custom reactive digital printing.');
-    setImageUrl('https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&q=80&w=1000');
-    setWeaveType('Plain Weave');
-    setComposition('100% Fine Combed Cotton');
-    setShowProductModal(true);
-  };
-
-  const handleOpenEditProduct = (prod: Product) => {
-    setEditingProduct(prod);
-    setName(prod.name);
-    setCategory(prod.category);
-    setGsm(prod.gsm);
-    setWidth(prod.width);
-    setCount(prod.count);
-    setColor(prod.color);
-    setColorCode(prod.colorCode || '#ffffff');
-    setPricePerMeter(prod.price_per_meter);
-    setSwatchTestPrice(prod.swatch_test_price);
-    setSwatchBigPrice(prod.swatch_big_price);
-    setPrintSurcharge(prod.print_surcharge_per_meter);
-    setDescription(prod.description);
-    setImageUrl(prod.images[0] || '');
-    setWeaveType(prod.weave_type);
-    setComposition(prod.composition);
-    setShowProductModal(true);
-  };
-
-  const handleSaveProduct = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const productPayload: Partial<Product> = {
-      name,
-      category,
-      gsm,
-      width,
-      count,
-      color,
-      colorCode,
-      price_per_meter: pricePerMeter,
-      swatch_test_price: swatchTestPrice,
-      swatch_big_price: swatchBigPrice,
-      print_surcharge_per_meter: printSurcharge,
-      description,
-      images: [imageUrl || 'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&q=80&w=1000'],
-      weave_type: weaveType,
-      composition,
-      in_stock: true
-    };
-
+  const handleSaveProductFromWizard = async (payload: Partial<Product>) => {
     if (editingProduct) {
-      await updateProduct(editingProduct.id, productPayload);
+      await updateProduct(editingProduct.id, payload);
     } else {
-      await createProduct(productPayload);
+      await createProduct(payload);
     }
-
-    setShowProductModal(false);
+    setEditingProduct(null);
     await reloadAdminData();
+    setProductsSubSection('all_products');
+  };
+
+  const handleEditProductInWizard = (prod: Product) => {
+    setEditingProduct(prod);
+    setActiveAdminTab('products');
+    setProductsSubSection('add_product');
   };
 
   const handleDeleteProduct = async (id: string) => {
@@ -181,6 +187,76 @@ export const AdminDashboard: React.FC = () => {
       await deleteProduct(id);
       await reloadAdminData();
     }
+  };
+
+  // Master Categories handlers
+  const handleAddMasterCategory = async (cat: Partial<Category>) => {
+    await createMasterCategory(cat);
+    await reloadAdminData();
+  };
+  const handleUpdateMasterCategory = async (id: string, cat: Partial<Category>) => {
+    await updateMasterCategory(id, cat);
+    await reloadAdminData();
+  };
+  const handleDeleteMasterCategory = async (id: string) => {
+    await deleteMasterCategory(id);
+    await reloadAdminData();
+  };
+
+  // Master Fabrics handlers
+  const handleAddMasterFabric = async (fab: Omit<MasterFabric, 'id'>) => {
+    await createMasterFabric(fab);
+    await reloadAdminData();
+  };
+  const handleUpdateMasterFabric = async (id: string, fab: Partial<MasterFabric>) => {
+    await updateMasterFabric(id, fab);
+    await reloadAdminData();
+  };
+  const handleDeleteMasterFabric = async (id: string) => {
+    await deleteMasterFabric(id);
+    await reloadAdminData();
+  };
+
+  // Master GSM handlers
+  const handleAddMasterGsm = async (gsm: Omit<MasterGsmWeight, 'id'>) => {
+    await createMasterGsm(gsm);
+    await reloadAdminData();
+  };
+  const handleUpdateMasterGsm = async (id: string, gsm: Partial<MasterGsmWeight>) => {
+    await updateMasterGsm(id, gsm);
+    await reloadAdminData();
+  };
+  const handleDeleteMasterGsm = async (id: string) => {
+    await deleteMasterGsm(id);
+    await reloadAdminData();
+  };
+
+  // Master Size Format handlers
+  const handleAddMasterSizeFormat = async (fmt: Omit<MasterFabricSizeFormat, 'id'>) => {
+    await createMasterSizeFormat(fmt);
+    await reloadAdminData();
+  };
+  const handleUpdateMasterSizeFormat = async (id: string, fmt: Partial<MasterFabricSizeFormat>) => {
+    await updateMasterSizeFormat(id, fmt);
+    await reloadAdminData();
+  };
+  const handleDeleteMasterSizeFormat = async (id: string) => {
+    await deleteMasterSizeFormat(id);
+    await reloadAdminData();
+  };
+
+  // Master Variant handlers
+  const handleAddMasterVariant = async (v: Omit<MasterFabricVariantBase, 'id'>) => {
+    await createMasterVariant(v);
+    await reloadAdminData();
+  };
+  const handleUpdateMasterVariant = async (id: string, v: Partial<MasterFabricVariantBase>) => {
+    await updateMasterVariant(id, v);
+    await reloadAdminData();
+  };
+  const handleDeleteMasterVariant = async (id: string) => {
+    await deleteMasterVariant(id);
+    await reloadAdminData();
   };
 
   const handleUpdateOrderStatus = async (orderId: string, status: OrderStatus) => {
@@ -203,18 +279,22 @@ export const AdminDashboard: React.FC = () => {
                 TexPrint Mill Admin Portal
               </h1>
               <p className="text-xs text-slate-400 mt-0.5">
-                Manage fabric inventory, GSM specs, custom print design approvals & orders.
+                Manage fabric inventory, master specs, custom print design approvals & orders.
               </p>
             </div>
           </div>
 
           <button
-            onClick={handleOpenNewProduct}
-            className="bg-red-600 hover:bg-red-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs flex items-center space-x-2 transition shadow-lg shrink-0"
+            onClick={() => {
+              setEditingProduct(null);
+              setActiveAdminTab('products');
+              setProductsSubSection('add_product');
+            }}
+            className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold py-2.5 px-4 rounded-xl text-xs flex items-center space-x-2 transition shadow-lg shrink-0"
             id="admin-add-product-button"
           >
             <Plus className="w-4 h-4" />
-            <span>Add New Fabric Base</span>
+            <span>+ Add New Product</span>
           </button>
         </div>
 
@@ -222,19 +302,27 @@ export const AdminDashboard: React.FC = () => {
         <div className="flex items-center space-x-2 border-b border-slate-800 pb-2 overflow-x-auto">
           {[
             { id: 'analytics', label: 'Analytics Dashboard', icon: BarChart3 },
-            { id: 'products', label: `Manage Fabrics (${products.length})`, icon: Package },
+            { id: 'products', label: `PRODUCTS (${products.length})`, icon: Package },
             { id: 'orders', label: `Order Queue (${orders.length})`, icon: Clock },
-            { id: 'categories', label: 'Categories', icon: Layers },
+            { id: 'categories', label: 'Categories Master', icon: Layers },
             { id: 'customizer', label: 'Customizer & Artwork Controls', icon: Sliders }
           ].map((tab) => {
             const Icon = tab.icon;
+            const isTabActive = activeAdminTab === tab.id || (tab.id === 'categories' && activeAdminTab === 'products' && productsSubSection === 'categories');
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveAdminTab(tab.id as any)}
+                onClick={() => {
+                  if (tab.id === 'categories') {
+                    setActiveAdminTab('products');
+                    setProductsSubSection('categories');
+                  } else {
+                    setActiveAdminTab(tab.id as any);
+                  }
+                }}
                 className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 ${
-                  activeAdminTab === tab.id
-                    ? 'bg-amber-500 text-slate-950 shadow-md'
+                  isTabActive
+                    ? 'bg-amber-500 text-slate-950 font-extrabold shadow-md'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 border border-slate-700'
                 }`}
               >
@@ -308,171 +396,135 @@ export const AdminDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* TAB 2: PRODUCTS MANAGER */}
+        {/* TAB 2: PRODUCTS MODULE (WOOCOMMERCE STRUCTURE) */}
         {activeAdminTab === 'products' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-white text-base">Fabric Catalog Inventory</h3>
-              <button
-                onClick={handleOpenNewProduct}
-                className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 px-3 rounded-xl transition flex items-center space-x-1"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add Product</span>
-              </button>
+          <div className="space-y-6">
+            {/* Products Sub-Sections Navigation Pills */}
+            <div className="bg-slate-800 p-2.5 rounded-2xl border border-slate-700 flex items-center space-x-1.5 overflow-x-auto">
+              {[
+                { id: 'all_products', label: `1. All Products (${products.length})`, icon: Package },
+                { id: 'add_product', label: `2. Add New Product`, icon: Plus },
+                { id: 'categories', label: `3. Categories (${categories.length})`, icon: Layers },
+                { id: 'fabrics', label: `4. Fabrics (${masterFabrics.length})`, icon: Shirt },
+                { id: 'gsm', label: `5. GSM Weights (${masterGsm.length})`, icon: Weight },
+                { id: 'size_formats', label: `6. Size Formats (${masterSizeFormats.length})`, icon: Ruler },
+                { id: 'variants', label: `7. Variant Base (${masterVariants.length})`, icon: SlidersHorizontal }
+              ].map((sub) => {
+                const SubIcon = sub.icon;
+                const isSubActive = productsSubSection === sub.id;
+                return (
+                  <button
+                    key={sub.id}
+                    onClick={() => {
+                      if (sub.id === 'add_product') {
+                        setEditingProduct(null);
+                      }
+                      setProductsSubSection(sub.id as any);
+                    }}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition shrink-0 ${
+                      isSubActive
+                        ? 'bg-amber-500 text-slate-950 font-extrabold shadow-sm'
+                        : 'text-slate-300 hover:bg-slate-700/60'
+                    }`}
+                  >
+                    <SubIcon className="w-3.5 h-3.5" />
+                    <span>{sub.label}</span>
+                  </button>
+                );
+              })}
             </div>
 
-            <div className="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-slate-300">
-                  <thead className="bg-slate-900 text-slate-400 uppercase font-bold text-[10px] tracking-wider border-b border-slate-700">
-                    <tr>
-                      <th className="p-3.5">Fabric</th>
-                      <th className="p-3.5">Category</th>
-                      <th className="p-3.5">GSM / Width</th>
-                      <th className="p-3.5">Yarn Count</th>
-                      <th className="p-3.5">Price / Meter</th>
-                      <th className="p-3.5">Print Surcharge</th>
-                      <th className="p-3.5 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-700">
-                    {products.map((prod) => (
-                      <tr key={prod.id} className="hover:bg-slate-750 transition">
-                        <td className="p-3.5 flex items-center space-x-3">
-                          <img
-                            src={prod.images[0]}
-                            alt={prod.name}
-                            className="w-10 h-10 rounded-lg object-cover border border-slate-700"
-                          />
-                          <div>
-                            <span className="font-bold text-white block line-clamp-1">{prod.name}</span>
-                            <span className="text-[10px] text-slate-400">{prod.color}</span>
-                          </div>
-                        </td>
-                        <td className="p-3.5 font-semibold text-blue-400">{prod.category}</td>
-                        <td className="p-3.5 font-mono">{prod.gsm} GSM • {prod.width}</td>
-                        <td className="p-3.5 font-mono">{prod.count}</td>
-                        <td className="p-3.5 font-extrabold text-white">${prod.price_per_meter.toFixed(2)}</td>
-                        <td className="p-3.5 text-amber-400 font-semibold">+${prod.print_surcharge_per_meter.toFixed(2)}/m</td>
-                        <td className="p-3.5 text-right space-x-2">
-                          <button
-                            onClick={() => handleOpenEditProduct(prod)}
-                            className="p-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-slate-200 transition"
-                            title="Edit"
-                          >
-                            <Edit2 className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProduct(prod.id)}
-                            className="p-1.5 bg-red-900/50 hover:bg-red-800 rounded-lg text-red-300 transition"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            {/* Sub-Section 1: All Products Table */}
+            {productsSubSection === 'all_products' && (
+              <AllProductsTable
+                products={products}
+                fabrics={masterFabrics}
+                gsmWeights={masterGsm}
+                onAddNewClick={() => {
+                  setEditingProduct(null);
+                  setProductsSubSection('add_product');
+                }}
+                onEditProduct={handleEditProductInWizard}
+                onDeleteProduct={handleDeleteProduct}
+              />
+            )}
+
+            {/* Sub-Section 2: Add / Edit Product Wizard */}
+            {productsSubSection === 'add_product' && (
+              <AddProductWizard
+                categories={categories}
+                fabrics={masterFabrics}
+                gsmWeights={masterGsm}
+                sizeFormats={masterSizeFormats}
+                variantBases={masterVariants}
+                editingProduct={editingProduct}
+                onSaveProduct={handleSaveProductFromWizard}
+                onCancel={() => setProductsSubSection('all_products')}
+              />
+            )}
+
+            {/* Sub-Section 3: Categories Master Data */}
+            {productsSubSection === 'categories' && (
+              <MasterCategoriesTab
+                categories={categories}
+                onAddCategory={handleAddMasterCategory}
+                onUpdateCategory={handleUpdateMasterCategory}
+                onDeleteCategory={handleDeleteMasterCategory}
+              />
+            )}
+
+            {/* Sub-Section 4: Fabrics Master Data */}
+            {productsSubSection === 'fabrics' && (
+              <MasterFabricsTab
+                fabrics={masterFabrics}
+                categories={categories}
+                onAddFabric={handleAddMasterFabric}
+                onUpdateFabric={handleUpdateMasterFabric}
+                onDeleteFabric={handleDeleteMasterFabric}
+              />
+            )}
+
+            {/* Sub-Section 5: GSM Weights Master Data */}
+            {productsSubSection === 'gsm' && (
+              <MasterGsmTab
+                gsmWeights={masterGsm}
+                onAddGsm={handleAddMasterGsm}
+                onUpdateGsm={handleUpdateMasterGsm}
+                onDeleteGsm={handleDeleteMasterGsm}
+              />
+            )}
+
+            {/* Sub-Section 6: Fabric Size Formats Master Data */}
+            {productsSubSection === 'size_formats' && (
+              <MasterSizeFormatsTab
+                sizeFormats={masterSizeFormats}
+                onAddSizeFormat={handleAddMasterSizeFormat}
+                onUpdateSizeFormat={handleUpdateMasterSizeFormat}
+                onDeleteSizeFormat={handleDeleteMasterSizeFormat}
+              />
+            )}
+
+            {/* Sub-Section 7: Fabric Variant Base Master Data */}
+            {productsSubSection === 'variants' && (
+              <MasterVariantsTab
+                variantBases={masterVariants}
+                onAddVariant={handleAddMasterVariant}
+                onUpdateVariant={handleUpdateMasterVariant}
+                onDeleteVariant={handleDeleteMasterVariant}
+              />
+            )}
           </div>
         )}
 
-        {/* TAB 3: ORDERS QUEUE & PRINT ARTWORK DOWNLOAD */}
+        {/* TAB 3: ORDERS QUEUE & ORDER FULFILLMENT MANAGEMENT */}
         {activeAdminTab === 'orders' && (
-          <div className="space-y-4">
-            <h3 className="font-bold text-white text-base">Customer Orders & Custom Print Artwork Files</h3>
-
-            <div className="space-y-4">
-              {orders.map((order) => (
-                <div key={order.id} className="bg-slate-800 rounded-2xl border border-slate-700 p-5 space-y-4">
-                  <div className="flex flex-wrap items-center justify-between gap-3 text-xs border-b border-slate-700 pb-3">
-                    <div>
-                      <span className="text-amber-400 font-extrabold text-sm block">{order.id}</span>
-                      <span className="text-slate-400 text-[11px]">
-                        Customer: {order.customerName} ({order.customerPhone})
-                      </span>
-                    </div>
-
-                    <div>
-                      <span className="text-slate-400 text-[10px] uppercase font-bold block">Shipping To</span>
-                      <span className="text-slate-200 font-medium">
-                        {order.shippingAddress.city}, {order.shippingAddress.state}
-                      </span>
-                    </div>
-
-                    <div>
-                      <span className="text-slate-400 text-[10px] uppercase font-bold block">Payment</span>
-                      <span className="text-emerald-400 font-bold">
-                        ${order.totalAmount.toFixed(2)} ({order.paymentMethod})
-                      </span>
-                    </div>
-
-                    {/* Status Update Dropdown */}
-                    <div className="flex items-center space-x-2">
-                      <span className="text-slate-400 text-xs font-semibold">Status:</span>
-                      <select
-                        value={order.orderStatus}
-                        onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value as OrderStatus)}
-                        className="bg-slate-900 border border-slate-600 text-amber-400 font-bold rounded-lg px-2.5 py-1 text-xs focus:outline-none"
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Printing">Printing (Mill)</option>
-                        <option value="Shipped">Shipped</option>
-                        <option value="Delivered">Delivered</option>
-                        <option value="Cancelled">Cancelled</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Order Items & Design Files */}
-                  <div className="divide-y divide-slate-700 space-y-3">
-                    {order.items.map((item, idx) => (
-                      <div key={idx} className="pt-3 first:pt-0 flex items-start justify-between text-xs gap-4">
-                        <div className="flex items-start space-x-3">
-                          <img
-                            src={item.productImage}
-                            alt={item.productName}
-                            className="w-12 h-12 rounded-lg object-cover border border-slate-700"
-                          />
-                          <div>
-                            <p className="font-bold text-white">{item.productName}</p>
-                            <p className="text-slate-400 text-[11px]">
-                              {item.sizeLabel} • Qty: {item.quantity} • {item.gsm} GSM
-                            </p>
-                            {item.printOptions.requiresPrint && (
-                              <div className="mt-1 flex items-center space-x-2 bg-slate-900 p-2 rounded-lg border border-slate-700">
-                                <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                                <span className="text-[11px] text-slate-200 truncate max-w-[200px]">
-                                  Design: {item.printOptions.designName || 'Artwork Uploaded'}
-                                </span>
-                                {item.printOptions.designUrl && (
-                                  <a
-                                    href={item.printOptions.designUrl}
-                                    download={item.printOptions.designName || 'design-artwork.png'}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="p-1 bg-amber-500 text-slate-950 rounded hover:bg-amber-400 transition font-bold text-[10px] flex items-center space-x-1"
-                                  >
-                                    <Download className="w-3 h-3" />
-                                    <span>Download 300DPI</span>
-                                  </a>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <span className="font-extrabold text-white">${item.totalPrice.toFixed(2)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <OrderManagementTab
+            orders={orders}
+            onUpdateOrderStatus={async (orderId, status, tracking) => {
+              await updateOrderStatus(orderId, status, tracking);
+              await reloadAdminData();
+            }}
+          />
         )}
 
         {/* TAB 4: CATEGORIES */}
@@ -728,175 +780,6 @@ export const AdminDashboard: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* ADD / EDIT PRODUCT MODAL */}
-      {showProductModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs">
-          <div className="bg-slate-900 text-white rounded-3xl max-w-2xl w-full p-6 border border-slate-700 shadow-2xl max-h-[90vh] overflow-y-auto space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="font-bold text-base font-serif">
-                {editingProduct ? 'Edit Fabric Specifications' : 'Add New Fabric Base'}
-              </h3>
-              <button onClick={() => setShowProductModal(false)} className="text-slate-400 hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveProduct} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="sm:col-span-2">
-                <label className="block font-semibold text-slate-400 mb-1">Fabric Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white font-semibold focus:outline-none focus:ring-1 focus:ring-amber-500"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-400 mb-1">Category *</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value as CategoryType)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white font-semibold"
-                >
-                  {['Cotton', 'Linen', 'Silk', 'Rayon', 'Modal', 'Organza'].map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-400 mb-1">GSM Weight (e.g. 75) *</label>
-                <input
-                  type="number"
-                  required
-                  value={gsm}
-                  onChange={(e) => setGsm(parseInt(e.target.value) || 0)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-400 mb-1">Usable Width *</label>
-                <input
-                  type="text"
-                  required
-                  value={width}
-                  onChange={(e) => setWidth(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-400 mb-1">Yarn Count *</label>
-                <input
-                  type="text"
-                  required
-                  value={count}
-                  onChange={(e) => setCount(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-400 mb-1">Base Color Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-400 mb-1">Base Price / Meter ($) *</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  required
-                  value={pricePerMeter}
-                  onChange={(e) => setPricePerMeter(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white font-bold"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-400 mb-1">Test Swatch Price (20x20cm) ($)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={swatchTestPrice}
-                  onChange={(e) => setSwatchTestPrice(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-400 mb-1">Big Swatch Price (75x100cm) ($)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={swatchBigPrice}
-                  onChange={(e) => setSwatchBigPrice(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-400 mb-1">Print Surcharge / Meter ($)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={printSurcharge}
-                  onChange={(e) => setPrintSurcharge(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white font-bold text-amber-400"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block font-semibold text-slate-400 mb-1">Fabric Image URL</label>
-                <input
-                  type="text"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block font-semibold text-slate-400 mb-1">Fabric Description</label>
-                <textarea
-                  rows={2}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white"
-                />
-              </div>
-
-              <div className="sm:col-span-2 pt-2 flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowProductModal(false)}
-                  className="bg-slate-800 text-slate-300 px-4 py-2 rounded-xl hover:bg-slate-700 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-5 py-2 rounded-xl transition shadow-md"
-                >
-                  Save Fabric Specs
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

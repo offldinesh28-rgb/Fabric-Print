@@ -2,10 +2,53 @@ export type CategoryType = 'Cotton' | 'Linen' | 'Silk' | 'Rayon' | 'Polyester' |
 
 export type SizeOptionType = 'swatch_test' | 'swatch_big' | 'meter';
 
+export interface MasterCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  image?: string;
+  itemCount?: number;
+}
+
+export interface MasterFabric {
+  id: string;
+  name: string;
+  categoryId: string;
+  categoryName: string;
+  defaultImage: string;
+}
+
+export interface MasterGsmWeight {
+  id: string;
+  gsmValue: number;
+  label: 'Lightweight' | 'Medium' | 'Heavy';
+}
+
+export interface MasterFabricSizeFormat {
+  id: string;
+  name: string;
+  dimensions: string;
+  pricingType: 'Fixed Price' | 'Per Meter';
+}
+
+export interface MasterFabricVariantBase {
+  id: string;
+  name: string;
+  baseColor: string;
+  finishType: string;
+  priceModifier: number;
+}
+
 export interface Product {
   id: string;
   name: string;
   category: CategoryType;
+  category_id?: string;
+  fabric_id?: string;
+  gsm_id?: string;
+  size_format_ids?: string[];
+  variant_ids?: string[];
   gsm: number; // e.g. 75, 110, 140
   width: string; // e.g. "44 inches", "58 inches"
   count: string; // Thread count e.g. "60s x 60s", "80s x 80s"

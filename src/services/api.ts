@@ -1,5 +1,36 @@
-import { Product, Category, Order, User, AdminAnalytics, AdminCustomizerSettings, PreloadedDesign } from '../types';
-import { INITIAL_PRODUCTS, INITIAL_CATEGORIES, INITIAL_USERS, INITIAL_ORDERS, INITIAL_CUSTOMIZER_SETTINGS, INITIAL_PRELOADED_DESIGNS } from '../data/mockData';
+import {
+  Product,
+  Category,
+  Order,
+  User,
+  AdminAnalytics,
+  AdminCustomizerSettings,
+  PreloadedDesign,
+  MasterCategory,
+  MasterFabric,
+  MasterGsmWeight,
+  MasterFabricSizeFormat,
+  MasterFabricVariantBase
+} from '../types';
+import {
+  INITIAL_PRODUCTS,
+  INITIAL_CATEGORIES,
+  INITIAL_USERS,
+  INITIAL_ORDERS,
+  INITIAL_CUSTOMIZER_SETTINGS,
+  INITIAL_PRELOADED_DESIGNS,
+  INITIAL_MASTER_FABRICS,
+  INITIAL_MASTER_GSM,
+  INITIAL_MASTER_SIZE_FORMATS,
+  INITIAL_MASTER_VARIANTS
+} from '../data/mockData';
+
+// Local storage/memory fallback stores for master data
+let localMasterCategories: Category[] = [...INITIAL_CATEGORIES];
+let localMasterFabrics: MasterFabric[] = [...INITIAL_MASTER_FABRICS];
+let localMasterGsm: MasterGsmWeight[] = [...INITIAL_MASTER_GSM];
+let localMasterSizeFormats: MasterFabricSizeFormat[] = [...INITIAL_MASTER_SIZE_FORMATS];
+let localMasterVariants: MasterFabricVariantBase[] = [...INITIAL_MASTER_VARIANTS];
 
 export async function fetchProducts(category?: string, search?: string): Promise<Product[]> {
   try {
@@ -213,3 +244,153 @@ export async function fetchAdminAnalytics(): Promise<AdminAnalytics> {
     };
   }
 }
+
+// ===================================================
+// MASTER DATA MANAGEMENT FUNCTIONS
+// ===================================================
+
+// Master Categories
+export async function createMasterCategory(cat: Partial<Category>): Promise<Category> {
+  try {
+    const res = await fetch('/api/categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(cat)
+    });
+    if (!res.ok) throw new Error('Failed');
+    return await res.json();
+  } catch {
+    const newCat: Category = {
+      id: `cat-${Date.now()}`,
+      name: (cat.name as any) || 'Cotton',
+      slug: cat.slug || (cat.name || 'category').toLowerCase().replace(/\s+/g, '-'),
+      image: cat.image || 'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&q=80&w=600',
+      description: cat.description || '',
+      itemCount: 0
+    };
+    localMasterCategories.push(newCat);
+    return newCat;
+  }
+}
+
+export async function updateMasterCategory(id: string, cat: Partial<Category>): Promise<Category> {
+  const idx = localMasterCategories.findIndex(c => c.id === id);
+  if (idx !== -1) {
+    localMasterCategories[idx] = { ...localMasterCategories[idx], ...cat };
+    return localMasterCategories[idx];
+  }
+  return { id, name: 'Cotton', slug: 'cotton', description: '', image: '', itemCount: 0, ...cat };
+}
+
+export async function deleteMasterCategory(id: string): Promise<void> {
+  localMasterCategories = localMasterCategories.filter(c => c.id !== id);
+}
+
+// Master Fabrics
+export async function fetchMasterFabrics(): Promise<MasterFabric[]> {
+  return localMasterFabrics;
+}
+
+export async function createMasterFabric(fab: Omit<MasterFabric, 'id'>): Promise<MasterFabric> {
+  const newFab: MasterFabric = {
+    ...fab,
+    id: `mf-${Date.now()}`
+  };
+  localMasterFabrics.push(newFab);
+  return newFab;
+}
+
+export async function updateMasterFabric(id: string, fab: Partial<MasterFabric>): Promise<MasterFabric> {
+  const idx = localMasterFabrics.findIndex(f => f.id === id);
+  if (idx !== -1) {
+    localMasterFabrics[idx] = { ...localMasterFabrics[idx], ...fab };
+    return localMasterFabrics[idx];
+  }
+  return { id, name: '', categoryId: '', categoryName: '', defaultImage: '', ...fab };
+}
+
+export async function deleteMasterFabric(id: string): Promise<void> {
+  localMasterFabrics = localMasterFabrics.filter(f => f.id !== id);
+}
+
+// Master GSM Weights
+export async function fetchMasterGsm(): Promise<MasterGsmWeight[]> {
+  return localMasterGsm;
+}
+
+export async function createMasterGsm(gsm: Omit<MasterGsmWeight, 'id'>): Promise<MasterGsmWeight> {
+  const newGsm: MasterGsmWeight = {
+    ...gsm,
+    id: `gsm-${Date.now()}`
+  };
+  localMasterGsm.push(newGsm);
+  return newGsm;
+}
+
+export async function updateMasterGsm(id: string, gsm: Partial<MasterGsmWeight>): Promise<MasterGsmWeight> {
+  const idx = localMasterGsm.findIndex(g => g.id === id);
+  if (idx !== -1) {
+    localMasterGsm[idx] = { ...localMasterGsm[idx], ...gsm };
+    return localMasterGsm[idx];
+  }
+  return { id, gsmValue: 100, label: 'Medium', ...gsm };
+}
+
+export async function deleteMasterGsm(id: string): Promise<void> {
+  localMasterGsm = localMasterGsm.filter(g => g.id !== id);
+}
+
+// Master Size Formats
+export async function fetchMasterSizeFormats(): Promise<MasterFabricSizeFormat[]> {
+  return localMasterSizeFormats;
+}
+
+export async function createMasterSizeFormat(fmt: Omit<MasterFabricSizeFormat, 'id'>): Promise<MasterFabricSizeFormat> {
+  const newFmt: MasterFabricSizeFormat = {
+    ...fmt,
+    id: `fmt-${Date.now()}`
+  };
+  localMasterSizeFormats.push(newFmt);
+  return newFmt;
+}
+
+export async function updateMasterSizeFormat(id: string, fmt: Partial<MasterFabricSizeFormat>): Promise<MasterFabricSizeFormat> {
+  const idx = localMasterSizeFormats.findIndex(s => s.id === id);
+  if (idx !== -1) {
+    localMasterSizeFormats[idx] = { ...localMasterSizeFormats[idx], ...fmt };
+    return localMasterSizeFormats[idx];
+  }
+  return { id, name: '', dimensions: '', pricingType: 'Fixed Price', ...fmt };
+}
+
+export async function deleteMasterSizeFormat(id: string): Promise<void> {
+  localMasterSizeFormats = localMasterSizeFormats.filter(s => s.id !== id);
+}
+
+// Master Fabric Variant Base
+export async function fetchMasterVariants(): Promise<MasterFabricVariantBase[]> {
+  return localMasterVariants;
+}
+
+export async function createMasterVariant(v: Omit<MasterFabricVariantBase, 'id'>): Promise<MasterFabricVariantBase> {
+  const newVariant: MasterFabricVariantBase = {
+    ...v,
+    id: `var-${Date.now()}`
+  };
+  localMasterVariants.push(newVariant);
+  return newVariant;
+}
+
+export async function updateMasterVariant(id: string, v: Partial<MasterFabricVariantBase>): Promise<MasterFabricVariantBase> {
+  const idx = localMasterVariants.findIndex(varItem => varItem.id === id);
+  if (idx !== -1) {
+    localMasterVariants[idx] = { ...localMasterVariants[idx], ...v };
+    return localMasterVariants[idx];
+  }
+  return { id, name: '', baseColor: '', finishType: '', priceModifier: 0, ...v };
+}
+
+export async function deleteMasterVariant(id: string): Promise<void> {
+  localMasterVariants = localMasterVariants.filter(v => v.id !== id);
+}
+

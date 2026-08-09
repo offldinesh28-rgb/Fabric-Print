@@ -435,3 +435,39 @@ export const INITIAL_ORDERS: Order[] = [
     createdAt: '2026-08-07T14:30:00Z'
   }
 ];
+
+export const INITIAL_MASTER_FABRICS = [
+  { id: 'mf-1', name: 'Combed Cotton Mulmul', categoryId: 'cat-cotton', categoryName: 'Cotton', defaultImage: 'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&q=80&w=600' },
+  { id: 'mf-2', name: 'French Flax Slub Linen', categoryId: 'cat-linen', categoryName: 'Linen', defaultImage: 'https://images.unsplash.com/photo-1603251578711-3290ca1a0187?auto=format&fit=crop&q=80&w=600' },
+  { id: 'mf-3', name: 'Grade 6A Mulberry Silk Satin', categoryId: 'cat-silk', categoryName: 'Silk', defaultImage: 'https://images.unsplash.com/photo-1528458876861-544fd1761a91?auto=format&fit=crop&q=80&w=600' },
+  { id: 'mf-4', name: 'Organic Cotton Cambric 80s', categoryId: 'cat-cotton', categoryName: 'Cotton', defaultImage: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&q=80&w=600' },
+  { id: 'mf-5', name: 'Viscose Rayon Slub Lurex', categoryId: 'cat-rayon', categoryName: 'Rayon', defaultImage: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&q=80&w=600' },
+  { id: 'mf-6', name: 'Lenzing Modal Satin', categoryId: 'cat-modal', categoryName: 'Modal', defaultImage: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=600' },
+  { id: 'mf-7', name: 'Glass Organza Silk Touch', categoryId: 'cat-organza', categoryName: 'Organza', defaultImage: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=600' },
+  { id: 'mf-8', name: 'Heavy Cotton Duck Canvas', categoryId: 'cat-cotton', categoryName: 'Cotton', defaultImage: 'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&q=80&w=600' }
+];
+
+export const INITIAL_MASTER_GSM = [
+  { id: 'gsm-1', gsmValue: 40, label: 'Lightweight' as const },
+  { id: 'gsm-2', gsmValue: 65, label: 'Lightweight' as const },
+  { id: 'gsm-3', gsmValue: 75, label: 'Lightweight' as const },
+  { id: 'gsm-4', gsmValue: 90, label: 'Lightweight' as const },
+  { id: 'gsm-5', gsmValue: 120, label: 'Medium' as const },
+  { id: 'gsm-6', gsmValue: 135, label: 'Medium' as const },
+  { id: 'gsm-7', gsmValue: 150, label: 'Medium' as const },
+  { id: 'gsm-8', gsmValue: 280, label: 'Heavy' as const }
+];
+
+export const INITIAL_MASTER_SIZE_FORMATS = [
+  { id: 'fmt-1', name: 'Test Swatch', dimensions: '20x20 cm', pricingType: 'Fixed Price' as const },
+  { id: 'fmt-2', name: 'Big Swatch', dimensions: '75x100 cm', pricingType: 'Fixed Price' as const },
+  { id: 'fmt-3', name: 'Linear Meter', dimensions: 'Full Width (112 - 147 cm)', pricingType: 'Per Meter' as const }
+];
+
+export const INITIAL_MASTER_VARIANTS = [
+  { id: 'var-1', name: 'Organic Bio-Washed Soft Finish', baseColor: 'Off-White', finishType: 'Bio-Wash', priceModifier: 0 },
+  { id: 'var-2', name: 'Optic Bleached White Base', baseColor: 'Optic White', finishType: 'Bleached', priceModifier: 10 },
+  { id: 'var-3', name: 'Mercerized High-Lustre Sheen', baseColor: 'Natural White', finishType: 'Mercerized', priceModifier: 25 },
+  { id: 'var-4', name: 'RFD (Ready For Dyeing) Unbleached', baseColor: 'Natural Cream', finishType: 'Raw RFD', priceModifier: 0 }
+];
+
