@@ -78,12 +78,14 @@ import { MasterGsmTab } from './admin/MasterGsmTab';
 import { MasterSizeFormatsTab } from './admin/MasterSizeFormatsTab';
 import { MasterVariantsTab } from './admin/MasterVariantsTab';
 import { OrderManagementTab } from './admin/OrderManagementTab';
+import { MediaLibraryModal } from './admin/MediaLibraryModal';
 
 interface AdminDashboardProps {
   onProductsChange?: () => void;
+  onViewProductInFrontend?: (productId: string) => void;
 }
 
-export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onProductsChange }) => {
+export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onProductsChange, onViewProductInFrontend }) => {
   const [activeAdminTab, setActiveAdminTab] = useState<'analytics' | 'products' | 'orders' | 'categories' | 'customizer'>('analytics');
   const [productsSubSection, setProductsSubSection] = useState<
     'all_products' | 'add_product' | 'categories' | 'fabrics' | 'gsm' | 'size_formats' | 'variants'
@@ -105,6 +107,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onProductsChange
   const [newDesignName, setNewDesignName] = useState('');
   const [newDesignCategory, setNewDesignCategory] = useState('Floral');
   const [newDesignUrl, setNewDesignUrl] = useState('');
+  const [isDesignMediaModalOpen, setIsDesignMediaModalOpen] = useState(false);
   const [newDesignWidth, setNewDesignWidth] = useState(2400);
   const [newDesignHeight, setNewDesignHeight] = useState(2400);
   const [settingsSavedAlert, setSettingsSavedAlert] = useState(false);
@@ -166,14 +169,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onProductsChange
   }, []);
 
   const handleSaveProductFromWizard = async (payload: Partial<Product>) => {
+    let saved: Product;
     if (editingProduct) {
-      await updateProduct(editingProduct.id, payload);
+      saved = await updateProduct(editingProduct.id, payload);
     } else {
-      await createProduct(payload);
+      saved = await createProduct(payload);
     }
     setEditingProduct(null);
     await reloadAdminData();
-    setProductsSubSection('all_products');
+    return saved;
   };
 
   const handleEditProductInWizard = (prod: Product) => {
@@ -183,10 +187,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onProductsChange
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (confirm('Are you sure you want to delete this fabric from inventory?')) {
-      await deleteProduct(id);
-      await reloadAdminData();
-    }
+    await deleteProduct(id);
+    await reloadAdminData();
   };
 
   // Master Categories handlers
@@ -459,6 +461,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onProductsChange
                 variantBases={masterVariants}
                 editingProduct={editingProduct}
                 onSaveProduct={handleSaveProductFromWizard}
+                onViewProductInFrontend={onViewProductInFrontend}
                 onCancel={() => setProductsSubSection('all_products')}
               />
             )}
@@ -722,16 +725,39 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onProductsChange
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Image URL *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="https://images.unsplash.com/..."
-                    value={newDesignUrl}
-                    onChange={(e) => setNewDesignUrl(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white"
-                  />
+                <div className="sm:col-span-3">
+                  <label className="block text-slate-400 mb-1 font-semibold">Motif Artwork Image *</label>
+                  <div className="bg-slate-800 p-3 rounded-2xl border border-slate-700 space-y-3">
+                    {newDesignUrl ? (
+                      <div className="relative rounded-xl overflow-hidden border border-slate-700 bg-slate-950 group h-32 max-w-xs">
+                        <img src={newDesignUrl} alt="Motif Preview" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                          <button
+                            type="button"
+                            onClick={() => setIsDesignMediaModalOpen(true)}
+                            className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-lg transition shadow-md flex items-center space-x-1"
+                          >
+                            <ImageIcon className="w-3.5 h-3.5" />
+                            <span>Change Artwork</span>
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed border-slate-700 rounded-xl p-4 text-center max-w-xs">
+                        <ImageIcon className="w-8 h-8 text-slate-500 mx-auto mb-1" />
+                        <p className="text-slate-400 text-[11px]">No motif artwork selected</p>
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => setIsDesignMediaModalOpen(true)}
+                      className="bg-slate-700 hover:bg-slate-600 text-amber-400 font-bold py-2 px-4 rounded-xl text-xs transition flex items-center space-x-2 border border-slate-600"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Select / Upload Artwork From Media Library</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div className="sm:col-span-3 flex justify-end">
@@ -780,6 +806,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onProductsChange
           </div>
         )}
       </div>
+
+      {/* Preloaded Design Motif Media Library Modal */}
+      <MediaLibraryModal
+        isOpen={isDesignMediaModalOpen}
+        onClose={() => setIsDesignMediaModalOpen(false)}
+        singleSelect={true}
+        title="Customizer Motif Artwork Selection"
+        initialSelectedUrls={newDesignUrl ? [newDesignUrl] : []}
+        onSelectImages={(urls) => {
+          if (urls.length > 0) {
+            setNewDesignUrl(urls[0]);
+          }
+        }}
+      />
     </div>
   );
 };

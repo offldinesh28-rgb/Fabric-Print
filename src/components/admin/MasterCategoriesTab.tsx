@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Plus, Edit2, Trash2, Layers, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, Layers, X, Image as ImageIcon } from 'lucide-react';
 import { Category } from '../../types';
+import { MediaLibraryModal } from './MediaLibraryModal';
 
 interface MasterCategoriesTabProps {
   categories: Category[];
@@ -16,6 +17,7 @@ export const MasterCategoriesTab: React.FC<MasterCategoriesTabProps> = ({
   onDeleteCategory
 }) => {
   const [showModal, setShowModal] = useState(false);
+  const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
   const [name, setName] = useState('');
@@ -172,14 +174,38 @@ export const MasterCategoriesTab: React.FC<MasterCategoriesTabProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-400 mb-1">Image URL</label>
-                <input
-                  type="text"
-                  placeholder="https://images.unsplash.com/..."
-                  value={image}
-                  onChange={(e) => setImage(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white"
-                />
+                <label className="block font-semibold text-slate-400 mb-1">Category Banner Image *</label>
+                <div className="bg-slate-800 p-3 rounded-2xl border border-slate-700 space-y-3">
+                  {image ? (
+                    <div className="relative rounded-xl overflow-hidden border border-slate-700 bg-slate-950 group h-32">
+                      <img src={image} alt="Category Banner" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => setIsMediaModalOpen(true)}
+                          className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-lg transition shadow-md flex items-center space-x-1"
+                        >
+                          <ImageIcon className="w-3.5 h-3.5" />
+                          <span>Change Image</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="border-2 border-dashed border-slate-700 rounded-xl p-4 text-center">
+                      <ImageIcon className="w-8 h-8 text-slate-500 mx-auto mb-1" />
+                      <p className="text-slate-400 text-[11px]">No category banner selected</p>
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => setIsMediaModalOpen(true)}
+                    className="w-full bg-slate-700 hover:bg-slate-600 text-amber-400 font-bold py-2 rounded-xl text-xs transition flex items-center justify-center space-x-2 border border-slate-600"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Select / Upload From Media Library</span>
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -212,6 +238,20 @@ export const MasterCategoriesTab: React.FC<MasterCategoriesTabProps> = ({
           </div>
         </div>
       )}
+
+      {/* Category Media Library Modal */}
+      <MediaLibraryModal
+        isOpen={isMediaModalOpen}
+        onClose={() => setIsMediaModalOpen(false)}
+        singleSelect={true}
+        title="Category Image Selection"
+        initialSelectedUrls={image ? [image] : []}
+        onSelectImages={(urls) => {
+          if (urls.length > 0) {
+            setImage(urls[0]);
+          }
+        }}
+      />
     </div>
   );
 };

@@ -15,6 +15,8 @@ interface MediaLibraryModalProps {
   onClose: () => void;
   onSelectImages: (selectedUrls: string[]) => void;
   initialSelectedUrls?: string[];
+  singleSelect?: boolean;
+  title?: string;
 }
 
 // Built-in stock textile & fabric image library
@@ -85,7 +87,9 @@ export const MediaLibraryModal: React.FC<MediaLibraryModalProps> = ({
   isOpen,
   onClose,
   onSelectImages,
-  initialSelectedUrls = []
+  initialSelectedUrls = [],
+  singleSelect = false,
+  title
 }) => {
   const [activeTab, setActiveTab] = useState<'library' | 'upload'>('library');
   const [search, setSearch] = useState('');
@@ -96,10 +100,14 @@ export const MediaLibraryModal: React.FC<MediaLibraryModalProps> = ({
   if (!isOpen) return null;
 
   const toggleSelectImage = (url: string) => {
-    if (selectedUrls.includes(url)) {
-      setSelectedUrls(selectedUrls.filter((u) => u !== url));
+    if (singleSelect) {
+      setSelectedUrls([url]);
     } else {
-      setSelectedUrls([...selectedUrls, url]);
+      if (selectedUrls.includes(url)) {
+        setSelectedUrls(selectedUrls.filter((u) => u !== url));
+      } else {
+        setSelectedUrls([...selectedUrls, url]);
+      }
     }
   };
 
@@ -149,10 +157,12 @@ export const MediaLibraryModal: React.FC<MediaLibraryModalProps> = ({
           <div>
             <h3 className="font-bold text-base text-white flex items-center space-x-2">
               <ImageIcon className="w-5 h-5 text-amber-400" />
-              <span>WordPress-Style Media Library</span>
+              <span>{title || 'Media Library & Uploads'}</span>
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Select or upload multiple product images. First selected image becomes main product thumbnail.
+              {singleSelect
+                ? 'Select or upload an image from device or stock library.'
+                : 'Select or upload product images. First selected image becomes main product thumbnail.'}
             </p>
           </div>
           <button onClick={onClose} className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-800 hover:bg-slate-700">

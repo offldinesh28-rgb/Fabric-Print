@@ -171,7 +171,22 @@ export function MainAppContent() {
               />
             )}
 
-            {activeTab === 'admin' && <AdminDashboard onProductsChange={loadData} />}
+            {activeTab === 'admin' && (
+              <AdminDashboard
+                onProductsChange={loadData}
+                onViewProductInFrontend={(prodId) => {
+                  fetchProducts().then((allProds) => {
+                    setProducts(allProds);
+                    const match = allProds.find((p) => p.id === prodId);
+                    if (match) {
+                      handleSelectProduct(match);
+                    } else {
+                      setActiveTab('fabrics');
+                    }
+                  });
+                }}
+              />
+            )}
 
             {activeTab === 'about' && (
               <AboutUsPage

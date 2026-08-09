@@ -16,7 +16,8 @@ import {
   Trash2,
   ArrowLeft,
   ArrowRight,
-  Check
+  Check,
+  Eye
 } from 'lucide-react';
 import {
   Product,
@@ -36,7 +37,8 @@ interface AddProductWizardProps {
   sizeFormats: MasterFabricSizeFormat[];
   variantBases: MasterFabricVariantBase[];
   editingProduct?: Product | null;
-  onSaveProduct: (productPayload: Partial<Product>) => Promise<void>;
+  onSaveProduct: (productPayload: Partial<Product>) => Promise<Product | void>;
+  onViewProductInFrontend?: (prodId: string) => void;
   onCancel: () => void;
 }
 
@@ -48,9 +50,12 @@ export const AddProductWizard: React.FC<AddProductWizardProps> = ({
   variantBases,
   editingProduct,
   onSaveProduct,
+  onViewProductInFrontend,
   onCancel
 }) => {
   const [currentStep, setCurrentStep] = useState<number>(1);
+  const [showPublishSuccessModal, setShowPublishSuccessModal] = useState<boolean>(false);
+  const [publishedProductData, setPublishedProductData] = useState<Product | null>(null);
 
   // STEP 1: Basic Info
   const [name, setName] = useState(editingProduct?.name || '');
@@ -194,7 +199,14 @@ export const AddProductWizard: React.FC<AddProductWizardProps> = ({
       featured: true
     };
 
-    await onSaveProduct(productPayload);
+    const result = await onSaveProduct(productPayload);
+    const finalProduct = (result || {
+      id: editingProduct?.id || `prod-${Date.now()}`,
+      ...productPayload
+    }) as Product;
+
+    setPublishedProductData(finalProduct);
+    setShowPublishSuccessModal(true);
   };
 
   const stepsList = [
@@ -794,6 +806,77 @@ export const AddProductWizard: React.FC<AddProductWizardProps> = ({
           )}
         </div>
       </div>
+
+      {/* Product Publish Success Popup Modal */}
+      {showPublishSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-slate-900 border border-emerald-500/50 text-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 text-center relative overflow-hidden">
+            {/* Top decorative gradient bar */}
+            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400" />
+
+            <div className="w-16 h-16 bg-emerald-950/80 border-2 border-emerald-500 text-emerald-400 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
+              <CheckCircle2 className="w-9 h-9 animate-bounce" />
+            </div>
+
+            <div className="space-y-1">
+              <h3 className="font-extrabold text-xl text-white font-serif">Product Published!</h3>
+              <p className="text-emerald-400 font-bold text-xs">
+                Your product has been published successfully
+              </p>
+            </div>
+
+            {/* Published Product Card Preview */}
+            {publishedProductData && (
+              <div className="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 text-left flex items-center space-x-3.5 shadow-inner">
+                <img
+                  src={publishedProductData.images?.[0] || 'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&q=80&w=400'}
+                  alt={publishedProductData.name}
+                  className="w-16 h-16 rounded-xl object-cover border border-slate-700 shrink-0"
+                />
+                <div className="min-w-0 flex-1">
+                  <span className="bg-emerald-950 text-emerald-400 text-[10px] font-extrabold px-2 py-0.5 rounded-md border border-emerald-800 uppercase tracking-wider inline-block mb-1">
+                    Live in Store
+                  </span>
+                  <h4 className="font-bold text-white text-sm truncate">{publishedProductData.name}</h4>
+                  <p className="text-amber-400 text-xs font-mono font-bold mt-0.5">
+                    ${publishedProductData.price_per_meter?.toFixed(2) || '6.50'} / meter
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="pt-2 flex flex-col sm:flex-row gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowPublishSuccessModal(false);
+                  onCancel(); // Back to admin list
+                }}
+                className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 px-4 rounded-xl text-xs transition"
+              >
+                Back to Products List
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowPublishSuccessModal(false);
+                  if (onViewProductInFrontend && publishedProductData?.id) {
+                    onViewProductInFrontend(publishedProductData.id);
+                  } else {
+                    onCancel();
+                  }
+                }}
+                className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-3 px-4 rounded-xl text-xs transition shadow-lg shadow-emerald-500/25 flex items-center justify-center space-x-1.5"
+              >
+                <Eye className="w-4 h-4" />
+                <span>View Product</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
