@@ -1,0 +1,6 @@
+{
+  "name": "TexPrint Fabrics & Custom Printing",
+  "description": "Premium fabric custom printing e-commerce platform with Tex India Mart logic, customized size calculation, artwork design upload, admin management, and user order tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
